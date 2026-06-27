@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BOB's Games — Sovereign Assembly Builds</title>
+<style>
+  :root {
+    --gold:   #ffd700;
+    --gold2:  #b8860b;
+    --red:    #ff3c3c;
+    --green:  #00ff88;
+    --cyan:   #00d4cc;
+    --grey:   #505060;
+    --bg:     #040406;
+    --panel:  #08080c;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html, body { width:100%; min-height:100vh; background:var(--bg); color:var(--gold); font-family:'Courier New',monospace; overflow-x:hidden; }
+
+  /* ── scanlines ── */
+  body::before {
+    content:''; position:fixed; inset:0; pointer-events:none; z-index:999;
+    background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);
+  }
+
+  /* ── header ── */
+  #header { text-align:center; padding:48px 20px 24px; }
+  #ascii-bob { font-size:clamp(7px,1.1vw,13px); line-height:1.15; color:var(--gold); white-space:pre; display:inline-block; text-shadow:0 0 18px var(--gold2); }
+  #tagline { margin-top:18px; font-size:clamp(10px,1.5vw,15px); color:var(--grey); letter-spacing:.18em; text-transform:uppercase; }
+  #worm-line { margin-top:10px; font-size:10px; color:var(--gold2); opacity:.5; white-space:nowrap; overflow:hidden; }
+
+  /* ── nav bar ── */
+  #nav { display:flex; justify-content:center; gap:32px; padding:20px; border-bottom:1px solid #1a1a20; border-top:1px solid #1a1a20; margin:0 0 40px; }
+  #nav a { color:var(--grey); text-decoration:none; font-size:12px; letter-spacing:.12em; text-transform:uppercase; transition:color .2s; }
+  #nav a:hover { color:var(--gold); }
+
+  /* ── game grid ── */
+  #games { display:grid; grid-template-columns:repeat(auto-fit,minmax(340px,1fr)); gap:24px; max-width:1100px; margin:0 auto; padding:0 24px 60px; }
+
+  .game-card {
+    background:var(--panel);
+    border:1px solid #1c1c24;
+    border-radius:4px;
+    padding:28px;
+    position:relative;
+    transition:border-color .25s, box-shadow .25s;
+  }
+  .game-card:hover { border-color:var(--gold2); box-shadow:0 0 24px rgba(255,215,0,.07); }
+  .game-card .badge {
+    position:absolute; top:16px; right:16px;
+    font-size:9px; letter-spacing:.15em; padding:3px 8px;
+    border:1px solid; border-radius:2px; text-transform:uppercase;
+  }
+  .badge-live   { color:var(--green); border-color:var(--green); }
+  .badge-soon   { color:var(--grey);  border-color:var(--grey);  }
+
+  .game-card h2 { font-size:20px; color:var(--gold); margin-bottom:6px; letter-spacing:.06em; }
+  .game-card .lang { font-size:10px; color:var(--cyan); letter-spacing:.15em; margin-bottom:16px; text-transform:uppercase; }
+  .game-card .ascii-preview { font-size:10px; line-height:1.4; color:#2a2a35; margin:16px 0; white-space:pre; transition:color .3s; }
+  .game-card:hover .ascii-preview { color:var(--gold2); }
+  .game-card p { font-size:12px; color:var(--grey); line-height:1.7; margin-bottom:20px; }
+
+  .game-card .links { display:flex; gap:12px; flex-wrap:wrap; }
+  .game-card .links a {
+    font-size:11px; letter-spacing:.1em; text-decoration:none;
+    padding:6px 14px; border:1px solid; border-radius:2px;
+    text-transform:uppercase; transition:all .2s;
+  }
+  .link-gold  { color:var(--gold);  border-color:var(--gold2); }
+  .link-gold:hover  { background:var(--gold); color:#000; }
+  .link-grey  { color:var(--grey);  border-color:#2a2a35; }
+  .link-grey:hover  { color:var(--gold); border-color:var(--gold2); }
+
+  /* ── terminal demo ── */
+  #terminal { max-width:780px; margin:0 auto 60px; padding:0 24px; }
+  #term-box {
+    background:#020204; border:1px solid #1c1c24; border-radius:4px; padding:24px;
+    font-size:12px; line-height:1.8;
+  }
+  #term-box .prompt { color:var(--green); }
+  #term-box .cmd    { color:var(--gold); }
+  #term-box .out    { color:var(--grey); }
+  #term-box .ok     { color:var(--green); }
+  #term-cursor { display:inline-block; width:8px; height:14px; background:var(--gold); animation:blink .8s step-end infinite; vertical-align:middle; }
+  @keyframes blink { 50%{opacity:0} }
+
+  /* ── worm ticker ── */
+  #worm-ticker { text-align:center; padding:16px; border-top:1px solid #1a1a20; margin-top:20px; }
+  #worm-ticker span { font-size:9px; color:var(--gold2); opacity:.35; letter-spacing:.08em; }
+
+  /* ── snake canvas ── */
+  #snake-demo { display:flex; justify-content:center; margin:0 auto 48px; padding:0 24px; }
+  canvas#sc { border:1px solid #1c1c24; background:#020204; display:block; }
+
+  /* ── footer ── */
+  footer { text-align:center; padding:32px; font-size:10px; color:var(--grey); letter-spacing:.15em; border-top:1px solid #1a1a20; }
+  footer a { color:var(--gold2); text-decoration:none; }
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<div id="header">
+<pre id="ascii-bob">
+ ██████╗  ██████╗ ██████╗ ███████╗     ██████╗  █████╗ ███╗   ███╗███████╗███████╗
+ ██╔══██╗██╔═══██╗██╔══██╗██╔════╝    ██╔════╝ ██╔══██╗████╗ ████║██╔════╝██╔════╝
+ ██████╔╝██║   ██║██████╔╝███████╗    ██║  ███╗███████║██╔████╔██║█████╗  ███████╗
+ ██╔══██╗██║   ██║██╔══██╗╚════██║    ██║   ██║██╔══██║██║╚██╔╝██║██╔══╝  ╚════██║
+ ██████╔╝╚██████╔╝██████╔╝███████║    ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗███████║
+ ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝
+</pre>
+  <div id="tagline">Sovereign Assembly Builds · x86-64 NASM · MIT License · WORM Sealed</div>
+  <div id="worm-line">WORM: initializing chain...</div>
+</div>
+
+<!-- ── NAV ── -->
+<nav id="nav">
+  <a href="#games">Games</a>
+  <a href="#build">Build</a>
+  <a href="https://github.com/SNAPKITTYWEST/bobs-games">GitHub</a>
+  <a href="https://github.com/SNAPKITTYWEST">SnapKitty</a>
+  <a href="https://collectivekitty.com">collectivekitty.com</a>
+</nav>
+
+<!-- ── LIVE SNAKE DEMO ── -->
+<div id="snake-demo">
+  <canvas id="sc" width="600" height="360"></canvas>
+</div>
+
+<!-- ── GAME CARDS ── -->
+<div id="games">
+
+  <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB SNAKE</h2>
+    <div class="lang">x86-64 NASM · Python/curses</div>
+    <pre class="ascii-preview">
++--------------------------------------+
+|  O###                    *           |
+|                                      |
+|         #####                        |
+|              O                       |
++--------------------------------------+
+SCORE: 0030  WORM: 3a7f2c9e...
+    </pre>
+    <p>Snake written in raw x86-64 assembly. No libc. No runtime. Syscalls directly. Terminal raw mode via ioctl. LCG RNG in registers. WORM sealed game over screen.</p>
+    <div class="links">
+      <a href="snake/bob_snake.asm" class="link-gold">Download ASM</a>
+      <a href="snake/bob_snake.py"  class="link-gold">Download PY</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/snake" class="link-grey">View Source</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-soon">COMING</span>
+    <h2>BOB TETRIS</h2>
+    <div class="lang">x86-64 NASM</div>
+    <pre class="ascii-preview">
++----------+
+|    []    |
+|   [][]   |
+| ████████ |
+| ████████ |
++----------+
+WORM: pending...
+    </pre>
+    <p>Tetris in pure assembly. Piece rotation via register bit manipulation. Line clear detection with SIMD. WORM sealed high score.</p>
+    <div class="links">
+      <a href="#" class="link-grey">Watch Repo</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-soon">COMING</span>
+    <h2>BOB PONG</h2>
+    <div class="lang">x86-64 NASM · PTX/CUDA</div>
+    <pre class="ascii-preview">
+|                         |
+|  |        o             |
+|  |                   |  |
+|           →           |  |
+|                         |
+CHUNK: physics_engine
+    </pre>
+    <p>Pong with physics. Ball trajectory computed via PTX kernel. Paddle AI routed through BOB's sovereign game chunk. Sub-millisecond response.</p>
+    <div class="links">
+      <a href="#" class="link-grey">Watch Repo</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-soon">COMING</span>
+    <h2>BOB DOOM RENDERER</h2>
+    <div class="lang">x86-64 NASM · RISC-V</div>
+    <pre class="ascii-preview">
+████████████████████████████
+████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████████
+████▓░░░░░░░░░░░░░▓██████████
+████▓░  CORRIDOR  ░▓█████████
+████▓░░░░░░░░░░░░░▓██████████
+ROUTE: RAYCASTER_CHUNK
+    </pre>
+    <p>Raycasting engine in assembly. Fixed-point math. No floating point. Column-by-column wall rendering. BOB routes all geometry through the sovereign math chunk.</p>
+    <div class="links">
+      <a href="#" class="link-grey">Watch Repo</a>
+    </div>
+  </div>
+
+</div>
+
+<!-- ── BUILD TERMINAL ── -->
+<div id="terminal">
+  <div id="term-box">
+    <div><span class="prompt">snapkitty@sovereign:~$</span> <span class="cmd" id="t-cmd"></span><span id="t-cur" class="term-cursor" style="display:none">█</span></div>
+    <div id="t-out"></div>
+  </div>
+</div>
+
+<!-- ── WORM TICKER ── -->
+<div id="worm-ticker">
+  <span id="worm-seal">WORM: computing...</span>
+</div>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <p>BOB'S GAMES · MIT LICENSE · <a href="https://github.com/SNAPKITTYWEST/bobs-games">SNAPKITTYWEST</a> · <a href="https://collectivekitty.com">SNAPKITTY COLLECTIVE</a></p>
+  <p style="margin-top:8px">EVIDENCE OR SILENCE · WORM SEALED · BUILT FROM SCRATCH</p>
+</footer>
+
+<script>
+// ── WORM seal generator ──────────────────────────────────────
+async function sha256(msg) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function updateWorm() {
+  const h = await sha256('BOB-GAMES-' + Date.now());
+  document.getElementById('worm-line').textContent = 'WORM: ' + h;
+  document.getElementById('worm-seal').textContent = 'WORM CHAIN: ' + h;
+}
+updateWorm();
+setInterval(updateWorm, 8000);
+
+// ── Terminal typewriter ──────────────────────────────────────
+const steps = [
+  { cmd: 'git clone https://github.com/SNAPKITTYWEST/bobs-games', delay: 60,
+    out: ['Cloning into \'bobs-games\'...', 'remote: Enumerating objects: 24', 'Receiving objects: 100% (24/24) done.'] },
+  { cmd: 'cd bobs-games/snake', delay: 60, out: [] },
+  { cmd: 'nasm -f elf64 bob_snake.asm -o bob_snake.o && ld bob_snake.o -o bob_snake', delay: 40,
+    out: ['[BOB] Assembling...', '[BOB] Linking...', '[BOB] WORM SEALED ✓'] },
+  { cmd: './bob_snake', delay: 60,
+    out: ['  B O B   S O V E R E I G N   S N A K E', 'WASD / ARROWS | Q: quit | EVIDENCE OR SILENCE', '', 'SCORE: 0000  WORM: 3a7f2c9e4b1d...'] },
+];
+
+let si = 0, ci = 0, typing = true, outI = 0, waiting = false;
+const cmdEl = document.getElementById('t-cmd');
+const outEl = document.getElementById('t-out');
+const curEl = document.getElementById('t-cur');
+curEl.style.display = 'inline-block';
+
+function typeStep() {
+  if (si >= steps.length) { si = 0; cmdEl.textContent = ''; outEl.innerHTML = ''; ci = 0; outI = 0; }
+  const step = steps[si];
+  if (ci < step.cmd.length) {
+    cmdEl.textContent += step.cmd[ci++];
+    setTimeout(typeStep, step.delay);
+  } else if (outI < step.out.length) {
+    const line = document.createElement('div');
+    line.className = step.out[outI].startsWith('[BOB]') ? 'ok' : 'out';
+    line.textContent = step.out[outI++];
+    outEl.appendChild(line);
+    setTimeout(typeStep, 120);
+  } else {
+    si++; ci = 0; outI = 0;
+    cmdEl.textContent = '';
+    setTimeout(typeStep, 900);
+  }
+}
+setTimeout(typeStep, 800);
+
+// ── Canvas Snake Demo ────────────────────────────────────────
+const canvas = document.getElementById('sc');
+const ctx = canvas.getContext('2d');
+const CW = canvas.width, CH = canvas.height;
+const CELL = 18, COLS = Math.floor(CW/CELL), ROWS = Math.floor(CH/CELL);
+const OX = (CW - COLS*CELL)/2, OY = (CH - ROWS*CELL)/2;
+
+let snake = [{x:8,y:10},{x:7,y:10},{x:6,y:10},{x:5,y:10}];
+let dir = {x:1,y:0}, food = {x:20,y:8}, score = 0, tick = 0;
+const dirs = [{x:1,y:0},{x:0,y:1},{x:-1,y:0},{x:0,y:-1}];
+let dirI = 0, turnTimer = 0;
+
+function rnd(n) { return Math.floor(Math.random()*n); }
+function spawnFood() { food = {x:rnd(COLS-2)+1, y:rnd(ROWS-2)+1}; }
+
+function gameStep() {
+  // auto-navigate toward food (simple AI)
+  turnTimer++;
+  if (turnTimer > 3) {
+    turnTimer = 0;
+    const head = snake[0];
+    const dx = food.x - head.x, dy = food.y - head.y;
+    let preferred;
+    if (Math.abs(dx) > Math.abs(dy)) preferred = dx > 0 ? 0 : 2;
+    else preferred = dy > 0 ? 1 : 3;
+    // avoid reversing
+    const rev = (dirI + 2) % 4;
+    if (preferred !== rev) {
+      // check it won't immediately self-hit
+      const nd = dirs[preferred];
+      const nh = {x:head.x+nd.x, y:head.y+nd.y};
+      const hit = snake.some(s=>s.x===nh.x&&s.y===nh.y);
+      if (!hit) { dirI = preferred; dir = dirs[dirI]; }
+    }
+  }
+
+  const head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+  // wrap walls
+  if (head.x <= 0) head.x = COLS-2;
+  if (head.x >= COLS-1) head.x = 1;
+  if (head.y <= 0) head.y = ROWS-2;
+  if (head.y >= ROWS-1) head.y = 1;
+
+  // self hit — reset
+  if (snake.some(s=>s.x===head.x&&s.y===head.y)) {
+    snake = [{x:8,y:10},{x:7,y:10},{x:6,y:10},{x:5,y:10}];
+    score = 0; spawnFood(); return;
+  }
+
+  const ate = head.x===food.x && head.y===food.y;
+  snake.unshift(head);
+  if (ate) { score+=10; spawnFood(); } else snake.pop();
+}
+
+function drawGame() {
+  ctx.fillStyle = '#020204';
+  ctx.fillRect(0,0,CW,CH);
+
+  // grid
+  for (let r=0;r<ROWS;r++) for (let c=0;c<COLS;c++) {
+    ctx.fillStyle = (r+c)%2===0 ? '#06060a' : '#040408';
+    ctx.fillRect(OX+c*CELL, OY+r*CELL, CELL, CELL);
+  }
+
+  // border
+  ctx.strokeStyle = '#b8860b';
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(OX, OY, COLS*CELL, ROWS*CELL);
+
+  // food pulse
+  const pulse = Math.sin(Date.now()*0.005)*3;
+  ctx.fillStyle = '#ff3c3c';
+  ctx.beginPath();
+  ctx.arc(OX+food.x*CELL+CELL/2, OY+food.y*CELL+CELL/2, 5+pulse, 0, Math.PI*2);
+  ctx.fill();
+  ctx.fillStyle = 'rgba(255,100,100,0.3)';
+  ctx.beginPath();
+  ctx.arc(OX+food.x*CELL+CELL/2, OY+food.y*CELL+CELL/2, 9+pulse, 0, Math.PI*2);
+  ctx.fill();
+
+  // snake body
+  snake.forEach((seg, i) => {
+    const ratio = 1 - i/snake.length;
+    const r = Math.floor(255*ratio + 80*(1-ratio));
+    const g = Math.floor(215*ratio + 60*(1-ratio));
+    ctx.fillStyle = `rgb(${r},${g},0)`;
+    const pad = i===0 ? 1 : 3;
+    ctx.fillRect(OX+seg.x*CELL+pad, OY+seg.y*CELL+pad, CELL-pad*2, CELL-pad*2);
+  });
+
+  // head glow
+  const hx = OX+snake[0].x*CELL+CELL/2, hy = OY+snake[0].y*CELL+CELL/2;
+  const grd = ctx.createRadialGradient(hx,hy,1,hx,hy,CELL);
+  grd.addColorStop(0,'rgba(255,215,0,0.4)');
+  grd.addColorStop(1,'rgba(255,215,0,0)');
+  ctx.fillStyle = grd;
+  ctx.fillRect(OX+snake[0].x*CELL-CELL, OY+snake[0].y*CELL-CELL, CELL*3, CELL*3);
+
+  // HUD
+  ctx.fillStyle = '#ffd700';
+  ctx.font = 'bold 12px Courier New';
+  ctx.fillText(`SCORE: ${String(score).padStart(4,'0')}`, OX+4, OY+ROWS*CELL+18);
+  ctx.fillStyle = '#b8860b';
+  ctx.font = '10px Courier New';
+  ctx.fillText('BOB SOVEREIGN SNAKE · x86-64 NASM · EVIDENCE OR SILENCE', OX+4, OY-8);
+}
+
+let lastStep = 0;
+function loop(ts) {
+  if (ts - lastStep > 140) { gameStep(); lastStep = ts; }
+  drawGame();
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+</script>
+</body>
+</html>
