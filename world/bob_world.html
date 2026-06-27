@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>BOB WORLD — Sovereign Metaverse</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#040406; color:#ffd700; font-family:'Courier New',monospace; height:100vh; display:flex; flex-direction:column; overflow:hidden; }
+#title-bar { padding:10px 18px; border-bottom:1px solid #1c1c24; display:flex; align-items:center; justify-content:space-between; flex-shrink:0; }
+#title-bar h1 { font-size:14px; letter-spacing:.2em; color:#ffd700; }
+#title-bar .sub { font-size:10px; color:#505060; letter-spacing:.15em; }
+#grid { display:grid; grid-template-columns:1fr 1fr 1fr; grid-template-rows:1fr 1fr; gap:2px; flex:1; background:#0a0a0e; }
+.world-pane { position:relative; overflow:hidden; border:1px solid #0e0e14; }
+.world-pane iframe { width:100%; height:100%; border:none; display:block; }
+.world-pane .label {
+  position:absolute; top:6px; left:8px; z-index:10;
+  font-size:9px; letter-spacing:.15em; color:#ffd700;
+  background:rgba(0,0,0,.8); padding:2px 8px; border:1px solid #1c1c24;
+  border-radius:1px; pointer-events:none;
+}
+.world-pane .status {
+  position:absolute; bottom:6px; right:8px; z-index:10;
+  font-size:8px; color:#b8860b; background:rgba(0,0,0,.8); padding:2px 8px;
+  border-radius:1px; pointer-events:none;
+}
+#worm-bar { padding:4px 18px; border-top:1px solid #1c1c24; font-size:9px; color:#b8860b; opacity:.5; flex-shrink:0; display:flex; justify-content:space-between; }
+</style>
+</head>
+<body>
+
+<div id="title-bar">
+  <div>
+    <h1>⬡ BOB WORLD — SOVEREIGN METAVERSE</h1>
+    <div class="sub">ALL WORLDS · ONE WORM CHAIN · MIT LICENSE</div>
+  </div>
+  <div style="font-size:9px;color:#505060" id="chain-hd">WORM: initializing...</div>
+</div>
+
+<div id="grid">
+  <div class="world-pane">
+    <div class="label">⬡ BOB TERRARIA</div>
+    <div class="status" id="st1">LIVE</div>
+    <iframe src="../terraria/bob_terraria.html" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+  <div class="world-pane">
+    <div class="label">⬡ BOB MINECRAFT</div>
+    <div class="status" id="st2">LIVE</div>
+    <iframe src="../minecraft/bob_minecraft.html" sandbox="allow-scripts allow-same-origin"></iframe>
+  </div>
+  <div class="world-pane" style="background:#020204;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+    <div class="label">⬡ BOB SIMS</div>
+    <pre style="font-size:9px;color:#2a2a35;line-height:1.5">
+ @  ARIA [ENGINEER]  →  KITCHEN
+ $  CARTO [HACKER]   →  ARCADE
+ %  FLUX [ARTIST]    →  LOUNGE
+ &  CIPHER [TRADER]  →  BEDROOM
+
+ MOOD: THRIVING ████████░░ 84
+ WORM: 3a7f2c9e4b1d...
+    </pre>
+    <a href="../sims/bob_sims.py" style="font-size:10px;color:#ffd700;text-decoration:none;border:1px solid #b8860b;padding:4px 12px;letter-spacing:.1em;">↓ bob_sims.py</a>
+    <div class="status" id="st3" style="position:static">python bob_sims.py</div>
+  </div>
+  <div class="world-pane" style="background:#020204;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+    <div class="label">⬡ BOB PARALLIVE</div>
+    <pre style="font-size:9px;color:#2a2a35;line-height:1.5">
+ R ROBOB  [WORKING    ] NRG:████████░░
+ C CARTO  [SOCIALIZING] NRG:██████░░░░
+ F FLUX   [IDLE       ] NRG:█████████░
+ X CIPHER [CRITICAL   ] NRG:██░░░░░░░░
+
+ THREADS: 4 LIVE
+ WORM: f2c9e3a74b1d...
+    </pre>
+    <a href="../parallive/bob_parallive.py" style="font-size:10px;color:#ffd700;text-decoration:none;border:1px solid #b8860b;padding:4px 12px;letter-spacing:.1em;">↓ bob_parallive.py</a>
+    <div class="status" id="st4" style="position:static">python bob_parallive.py</div>
+  </div>
+  <div class="world-pane" style="background:#020204;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;">
+    <div class="label">⬡ BOB SNAKE</div>
+    <canvas id="mini-snake" width="280" height="160" style="border:1px solid #1c1c24"></canvas>
+    <a href="../snake/bob_snake.py" style="font-size:10px;color:#ffd700;text-decoration:none;border:1px solid #b8860b;padding:4px 12px;letter-spacing:.1em;">↓ bob_snake.asm</a>
+  </div>
+  <div class="world-pane" style="background:#020204;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;text-align:center;">
+    <div class="label">⬡ BOB WORLD STATUS</div>
+    <div style="font-size:10px;color:#505060;letter-spacing:.1em;line-height:2">
+      TERRARIA  · LIVE    · Browser<br>
+      MINECRAFT · LIVE    · Browser<br>
+      SIMS      · LIVE    · Python<br>
+      PARALLIVE · LIVE    · Python<br>
+      SNAKE     · LIVE    · x86-64 / Python<br>
+    </div>
+    <div style="font-size:9px;color:#b8860b;border:1px solid #b8860b;padding:8px 16px;" id="world-seal">WORM: computing...</div>
+    <a href="https://github.com/SNAPKITTYWEST/bobs-games" style="font-size:10px;color:#ffd700;text-decoration:none;border:1px solid #b8860b;padding:6px 14px;letter-spacing:.1em;">GITHUB → SNAPKITTYWEST</a>
+  </div>
+</div>
+
+<div id="worm-bar">
+  <span>BOB SOVEREIGN METAVERSE · MIT LICENSE · EVIDENCE OR SILENCE</span>
+  <span id="worm-txt">WORM CHAIN: initializing...</span>
+</div>
+
+<script>
+// Mini snake demo
+const mc = document.getElementById('mini-snake');
+const mctx = mc.getContext('2d');
+const MCW=280,MCH=160,CS=10,COLS=Math.floor(MCW/CS),ROWS=Math.floor(MCH/CS);
+let mSnake=[{x:8,y:8},{x:7,y:8},{x:6,y:8}];
+let mDir={x:1,y:0},mFood={x:18,y:5},mScore=0,mDirI=0;
+const mDirs=[{x:1,y:0},{x:0,y:1},{x:-1,y:0},{x:0,y:-1}];
+let mTurn=0;
+
+function mStep() {
+  mTurn++;
+  if (mTurn>3) {
+    mTurn=0;
+    const h=mSnake[0];
+    const dx=mFood.x-h.x, dy=mFood.y-h.y;
+    let pref=Math.abs(dx)>Math.abs(dy)?(dx>0?0:2):(dy>0?1:3);
+    const rev=(mDirI+2)%4;
+    if (pref!==rev) { const nd=mDirs[pref]; if (!mSnake.some(s=>s.x===h.x+nd.x&&s.y===h.y+nd.y)) { mDirI=pref;mDir=mDirs[mDirI]; } }
+  }
+  const nh={x:mSnake[0].x+mDir.x,y:mSnake[0].y+mDir.y};
+  if (nh.x<0)nh.x=COLS-1; if(nh.x>=COLS)nh.x=0;
+  if (nh.y<0)nh.y=ROWS-1; if(nh.y>=ROWS)nh.y=0;
+  if (mSnake.some(s=>s.x===nh.x&&s.y===nh.y)) { mSnake=[{x:8,y:8},{x:7,y:8}]; mScore=0; return; }
+  const ate=nh.x===mFood.x&&nh.y===mFood.y;
+  mSnake.unshift(nh);
+  if (ate) { mScore+=10; mFood={x:1+Math.floor(Math.random()*(COLS-2)),y:1+Math.floor(Math.random()*(ROWS-2))}; }
+  else mSnake.pop();
+}
+
+function mDraw() {
+  mctx.fillStyle='#020204'; mctx.fillRect(0,0,MCW,MCH);
+  mctx.fillStyle='#ff3c3c';
+  mctx.beginPath(); mctx.arc(mFood.x*CS+CS/2,mFood.y*CS+CS/2,4+Math.sin(Date.now()*.005)*2,0,Math.PI*2); mctx.fill();
+  mSnake.forEach((s,i)=>{
+    const r=1-i/mSnake.length;
+    mctx.fillStyle=`rgb(${Math.floor(255*r+80*(1-r))},${Math.floor(215*r+60*(1-r))},0)`;
+    mctx.fillRect(s.x*CS+1,s.y*CS+1,CS-2,CS-2);
+  });
+  mctx.fillStyle='#ffd700'; mctx.font='9px Courier New';
+  mctx.fillText(`SCORE:${mScore}`,4,MCH-4);
+}
+
+let mLast=0;
+function mLoop(ts) { if(ts-mLast>140){mStep();mLast=ts;} mDraw(); requestAnimationFrame(mLoop); }
+requestAnimationFrame(mLoop);
+
+// WORM
+let wPrev='GENESIS';
+async function seal(evt) {
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(`${wPrev}|${evt}`));
+  wPrev=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  document.getElementById('world-seal').textContent='WORM: '+wPrev.slice(0,32)+'...';
+  document.getElementById('worm-txt').textContent='WORM CHAIN: '+wPrev;
+  document.getElementById('chain-hd').textContent='WORM: '+wPrev.slice(0,16)+'...';
+}
+seal('BOB_WORLD_BOOT');
+setInterval(()=>seal('HEARTBEAT'),10000);
+</script>
+</body>
+</html>

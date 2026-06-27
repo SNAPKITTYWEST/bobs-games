@@ -153,6 +153,101 @@ SCORE: 0030  WORM: 3a7f2c9e...
   </div>
 
   <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB SIMS</h2>
+    <div class="lang">Python/curses · WORM State</div>
+    <pre class="ascii-preview">
+ @  ARIA [ENGINEER]  →  KITCHEN
+ $  CARTO [HACKER]   →  ARCADE
+ %  FLUX [ARTIST]    →  LOUNGE
+
+ MOOD: THRIVING ████████░░ 84
+ WORM: 3a7f2c9e4b1d...
+    </pre>
+    <p>Sovereign NPC life simulation. 12 agents, 6 needs, 6 rooms. NPCs pathfind to restore their lowest need. Every state change WORM sealed. Terminal curses UI.</p>
+    <div class="links">
+      <a href="sims/bob_sims.py" class="link-gold">Download PY</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/sims" class="link-grey">View Source</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB PARALLIVE</h2>
+    <div class="lang">Python · Threading · WORM</div>
+    <pre class="ascii-preview">
+ R ROBOB  [WORKING    ] NRG:████████░░
+ C CARTO  [SOCIALIZING] NRG:██████░░░░
+ F FLUX   [IDLE       ] NRG:█████████░
+ X CIPHER [CRITICAL   ] NRG:██░░░░░░░░
+
+ THREADS: 4 LIVE   WORM: f2c9e3a74b...
+    </pre>
+    <p>Concurrent multi-agent life. Each NPC runs its own thread. Shared world state with per-agent locks. Agents seek each other to restore social need. Up to 12 simultaneous.</p>
+    <div class="links">
+      <a href="parallive/bob_parallive.py" class="link-gold">Download PY</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/parallive" class="link-grey">View Source</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB TERRARIA</h2>
+    <div class="lang">Browser · Canvas · Procgen</div>
+    <pre class="ascii-preview">
+ ☁  ☁     ☁☁          ☁
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ ░░ DIRT  STONE  GOLD_ORE  LAVA ░░
+ ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+ ████  BEDROCK  ████  BEDROCK  ████
+DEPTH: 12m  WORM: b3d9e1a2...
+    </pre>
+    <p>2D side-scroller with procedural world gen. Mine ore, place blocks, dig caves. Physics engine with collision. WORM seals every mine/place/jump event. Playable in browser.</p>
+    <div class="links">
+      <a href="terraria/bob_terraria.html" class="link-gold">Play Now</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/terraria" class="link-grey">View Source</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB MINECRAFT</h2>
+    <div class="lang">Browser · Raycaster · Voxel</div>
+    <pre class="ascii-preview">
+ ┌────────────────────────────────┐
+ │  ████  STONE ████████  BEDROCK │
+ │ ▓▓▓▓ DIRT ▓▓▓  GOLD_ORE ████  │
+ │░░░░░░ GRASS ░░░░░░░░░░░░░░░░░░ │
+ └────────────────────────────────┘
+FPS: 60  BLOCK: STONE  WORM: c4...
+    </pre>
+    <p>First-person voxel raycaster. Click to lock mouse and explore. Left-click mines, right-click places. 128×64×128 world with ore veins and caves. WORM sealed every action.</p>
+    <div class="links">
+      <a href="minecraft/bob_minecraft.html" class="link-gold">Play Now</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/minecraft" class="link-grey">View Source</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB WORLD</h2>
+    <div class="lang">Sovereign Metaverse · All Worlds</div>
+    <pre class="ascii-preview">
+ ⬡ TERRARIA  │ ⬡ MINECRAFT
+ ─────────────┼─────────────
+ ⬡ SIMS      │ ⬡ PARALLIVE
+ ─────────────┴─────────────
+ ⬡ SNAKE     │ ⬡ STATUS
+ONE WORM CHAIN · EVIDENCE OR SILENCE
+    </pre>
+    <p>All worlds in one sovereign dashboard. Six game panes live simultaneously. One shared WORM chain across every world. The BOB sovereign metaverse — all MIT licensed.</p>
+    <div class="links">
+      <a href="world/bob_world.html" class="link-gold">Enter World</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games" class="link-grey">GitHub</a>
+    </div>
+  </div>
+
+  <div class="game-card">
     <span class="badge badge-soon">COMING</span>
     <h2>BOB TETRIS</h2>
     <div class="lang">x86-64 NASM</div>
@@ -166,24 +261,6 @@ SCORE: 0030  WORM: 3a7f2c9e...
 WORM: pending...
     </pre>
     <p>Tetris in pure assembly. Piece rotation via register bit manipulation. Line clear detection with SIMD. WORM sealed high score.</p>
-    <div class="links">
-      <a href="#" class="link-grey">Watch Repo</a>
-    </div>
-  </div>
-
-  <div class="game-card">
-    <span class="badge badge-soon">COMING</span>
-    <h2>BOB PONG</h2>
-    <div class="lang">x86-64 NASM · PTX/CUDA</div>
-    <pre class="ascii-preview">
-|                         |
-|  |        o             |
-|  |                   |  |
-|           →           |  |
-|                         |
-CHUNK: physics_engine
-    </pre>
-    <p>Pong with physics. Ball trajectory computed via PTX kernel. Paddle AI routed through BOB's sovereign game chunk. Sub-millisecond response.</p>
     <div class="links">
       <a href="#" class="link-grey">Watch Repo</a>
     </div>
