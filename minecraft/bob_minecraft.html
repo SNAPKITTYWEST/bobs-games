@@ -3,435 +3,60 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>BOB MINECRAFT — Sovereign Voxel World</title>
+<title>BOB MINECRAFT — Download Python Edition</title>
 <style>
-* { margin:0; padding:0; box-sizing:border-box; }
-body { background:#000; overflow:hidden; font-family:'Courier New',monospace; color:#ffd700; }
-canvas { display:block; }
-#overlay {
-  position:fixed; inset:0; background:rgba(0,0,0,.92);
-  display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:20px; z-index:30;
-}
-#overlay h1 { font-size:clamp(26px,5vw,52px); letter-spacing:.1em; text-shadow:0 0 28px rgba(255,215,0,.4); }
-#overlay p  { color:#505060; font-size:12px; letter-spacing:.1em; text-align:center; line-height:2.2; }
-#overlay button {
-  background:transparent; border:1px solid #b8860b; color:#ffd700;
-  font-family:inherit; font-size:14px; padding:12px 36px;
-  cursor:pointer; letter-spacing:.12em; transition:all .2s;
-}
-#overlay button:hover { background:#b8860b; color:#000; }
-#hud {
-  position:fixed; top:0; left:0; right:0; padding:6px 16px;
-  background:rgba(0,0,0,.82); display:none; gap:18px; align-items:center;
-  font-size:11px; border-bottom:1px solid #1c1c24; z-index:10; flex-wrap:wrap;
-}
-#hud b { color:#00ff88; }
-#hud span { color:#505060; }
-#paused {
-  position:fixed; inset:0; background:rgba(0,0,0,.72);
-  display:none; align-items:center; justify-content:center;
-  flex-direction:column; gap:12px; z-index:20;
-}
-#paused h2 { font-size:26px; letter-spacing:.1em; }
-#paused p  { color:#505060; font-size:12px; }
-#toolbar {
-  position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
-  display:none; gap:4px; background:rgba(0,0,0,.8);
-  padding:6px; border:1px solid #1c1c24; z-index:10;
-}
-.slot {
-  width:38px; height:38px; border:1px solid #2a2a2a;
-  display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer;
-}
-.slot.active { border-color:#ffd700; box-shadow:0 0 8px rgba(255,215,0,.35); }
-#xhair {
-  position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-  display:none; color:rgba(255,255,255,.8); font-size:22px;
-  pointer-events:none; z-index:10; text-shadow:0 0 3px #000;
-}
-#worm {
-  position:fixed; bottom:0; left:0; right:0; padding:4px 14px;
-  background:rgba(0,0,0,.88); font-size:9px; color:#b8860b; opacity:.4;
-  border-top:1px solid #1c1c24; z-index:10; display:none;
-}
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:#040406; color:#ffd700; font-family:'Courier New',monospace;
+         display:flex; flex-direction:column; align-items:center; justify-content:center;
+         min-height:100vh; text-align:center; padding:40px 24px; }
+  h1 { font-size:clamp(22px,4vw,42px); letter-spacing:.08em; margin-bottom:12px; }
+  .sub { font-size:13px; color:#505060; letter-spacing:.18em; text-transform:uppercase; margin-bottom:48px; }
+  .box { background:#08080c; border:1px solid #1c1c24; border-radius:4px;
+         padding:36px 40px; max-width:560px; width:100%; }
+  pre { font-size:11px; line-height:1.5; color:#2a2a35; text-align:left; margin:24px 0; }
+  .info { font-size:13px; color:#707080; line-height:1.8; margin-bottom:28px; }
+  .info span { color:#00d4cc; }
+  .btn { display:inline-block; color:#ffd700; border:1px solid #b8860b;
+         padding:10px 28px; font:12px/1 'Courier New',monospace; letter-spacing:.12em;
+         text-transform:uppercase; text-decoration:none; border-radius:2px;
+         transition:all .2s; margin:6px; }
+  .btn:hover { background:#ffd700; color:#000; }
+  .btn-grey { color:#505060; border-color:#2a2a35; }
+  .btn-grey:hover { color:#ffd700; border-color:#b8860b; background:transparent; }
+  footer { margin-top:48px; font-size:10px; color:#303038; letter-spacing:.12em; }
 </style>
 </head>
 <body>
 
-<div id="overlay">
-  <h1>BOB MINECRAFT</h1>
-  <p>SOVEREIGN VOXEL WORLD · WORM SEALED · WebGL<br>
-     WASD · move &nbsp;|&nbsp; SPACE · jump &nbsp;|&nbsp; SCROLL · select block<br>
-     LEFT CLICK · mine &nbsp;|&nbsp; RIGHT CLICK · place &nbsp;|&nbsp; ESC · pause</p>
-  <button id="start-btn">ENTER THE WORLD</button>
+<h1>BOB MINECRAFT</h1>
+<div class="sub">Sovereign Voxel World · Python Edition · WORM Sealed</div>
+
+<div class="box">
+<pre>
+ ┌──────────────────────────────────────┐
+ │  WASD / Arrows  move                 │
+ │  Mouse          look around          │
+ │  Space          jump                 │
+ │  Left Click     mine block           │
+ │  Right Click    place block          │
+ │  1-8 / Scroll   select block         │
+ │  Q / Esc        quit                 │
+ └──────────────────────────────────────┘
+ BLOCKS: GRASS  DIRT  STONE  WOOD  GOLD
+         GLASS  LAVA  SAND   BEDROCK
+ WORM:   SHA-256 chain · every action sealed
+</pre>
+<div class="info">
+  First-person voxel world · 64 × 24 × 64 terrain<br>
+  Procedural hills · gold ore veins · trees<br>
+  Physics: gravity · jump · AABB collision<br>
+  Requires: <span>pip install pygame numpy</span>
+</div>
+<a href="bob_minecraft.py" class="btn" download>Download PY</a>
+<a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/minecraft" class="btn btn-grey">View Source</a>
+<a href="../index.html" class="btn btn-grey">← All Games</a>
 </div>
 
-<div id="paused"><h2>PAUSED</h2><p>Click to resume</p></div>
-
-<div id="hud">
-  <span style="color:#ffd700;font-weight:bold;letter-spacing:.1em">BOB MINECRAFT</span>
-  <span>XYZ: <b id="pos">–</b></span>
-  <span>BLOCK: <b id="blk">–</b></span>
-  <span>FPS: <b id="fps">–</b></span>
-  <span>WORM: <b id="wseal" style="color:#b8860b">init</b></span>
-</div>
-
-<canvas id="c"></canvas>
-<div id="xhair">+</div>
-
-<div id="toolbar">
-  <div class="slot active" data-b="1" title="GRASS">🟩</div>
-  <div class="slot" data-b="2" title="DIRT">🟫</div>
-  <div class="slot" data-b="3" title="STONE">⬜</div>
-  <div class="slot" data-b="4" title="WOOD">🪵</div>
-  <div class="slot" data-b="5" title="GOLD">🟡</div>
-  <div class="slot" data-b="6" title="GLASS">◻️</div>
-  <div class="slot" data-b="7" title="LAVA">🟥</div>
-  <div class="slot" data-b="8" title="SAND">🟨</div>
-</div>
-
-<div id="worm">WORM: init...</div>
-
-<!-- Three.js for real WebGL 3D rendering -->
-<script src="https://unpkg.com/three@0.158.0/build/three.min.js"></script>
-<script>
-// ── Block types ──────────────────────────────────────────────
-const B  = {AIR:0,GRASS:1,DIRT:2,STONE:3,WOOD:4,GOLD:5,GLASS:6,LAVA:7,SAND:8,BEDROCK:9};
-const BN = ['AIR','GRASS','DIRT','STONE','WOOD','GOLD','GLASS','LAVA','SAND','BEDROCK'];
-
-// Per-block colors [top, sides, bottom]  as 0xRRGGBB
-const BCOL = {
-  1:[0x4ab04a, 0x2d8a2d, 0x8a6240],
-  2:[0x8a6240, 0x6a4220, 0x6a4220],
-  3:[0x8a8a9a, 0x68687a, 0x505060],
-  4:[0xa07040, 0x7a5020, 0x7a5020],
-  5:[0xffd700, 0xc8a000, 0xb09000],
-  6:[0xaaddff, 0x88aacc, 0x88aacc],
-  7:[0xff5500, 0xcc3300, 0xcc3300],
-  8:[0xd4c060, 0xb0a040, 0xb0a040],
-  9:[0x181820, 0x101018, 0x080810],
-};
-
-// ── World ────────────────────────────────────────────────────
-const WX=48, WY=32, WZ=48;
-const world = new Uint8Array(WX*WY*WZ);
-function inW(x,y,z){return x>=0&&x<WX&&y>=0&&y<WY&&z>=0&&z<WZ;}
-function gb(x,y,z){x=~~x;y=~~y;z=~~z;return inW(x,y,z)?world[y*WX*WZ+z*WX+x]:B.BEDROCK;}
-function sb(x,y,z,v){x=~~x;y=~~y;z=~~z;if(inW(x,y,z))world[y*WX*WZ+z*WX+x]=v;}
-
-function genWorld(){
-  for(let x=0;x<WX;x++) for(let z=0;z<WZ;z++){
-    const h=~~(12+4*Math.sin(x*.15)+3*Math.cos(z*.12)+2*Math.sin((x+z)*.08));
-    for(let y=0;y<WY;y++){
-      if(y===0)sb(x,y,z,B.BEDROCK);
-      else if(y<h-3)sb(x,y,z,B.STONE);
-      else if(y<h)  sb(x,y,z,B.DIRT);
-      else if(y===h)sb(x,y,z,B.GRASS);
-    }
-  }
-  for(let i=0;i<120;i++){
-    const gx=~~(Math.random()*WX),gy=1+~~(Math.random()*8),gz=~~(Math.random()*WZ);
-    if(gb(gx,gy,gz)===B.STONE)sb(gx,gy,gz,B.GOLD);
-  }
-  for(let i=0;i<18;i++){
-    const tx=3+~~(Math.random()*(WX-6)),tz=3+~~(Math.random()*(WZ-6));
-    for(let y=WY-1;y>0;y--){
-      if(gb(tx,y,tz)===B.GRASS){for(let h=1;h<=4;h++)sb(tx,y+h,tz,B.WOOD);break;}
-    }
-  }
-}
-genWorld();
-
-// ── Three.js setup ───────────────────────────────────────────
-const cv = document.getElementById('c');
-const renderer = new THREE.WebGLRenderer({canvas:cv, antialias:false});
-renderer.setPixelRatio(Math.min(window.devicePixelRatio,1.5));
-
-const scene = new THREE.Scene();
-scene.background = new THREE.Color(0x060618);
-scene.fog = new THREE.Fog(0x060618, 18, 48);
-
-const camera = new THREE.PerspectiveCamera(70, 1, 0.05, 60);
-camera.rotation.order = 'YXZ';
-
-// Lighting: sun + fill
-const sun = new THREE.DirectionalLight(0xffd4a0, 0.9);
-sun.position.set(0.6, 1.0, 0.4);
-scene.add(sun);
-scene.add(new THREE.AmbientLight(0x304060, 0.55));
-
-function resize(){
-  const w=window.innerWidth, h=window.innerHeight;
-  renderer.setSize(w,h);
-  camera.aspect=w/h;
-  camera.updateProjectionMatrix();
-}
-resize();
-window.addEventListener('resize',resize);
-
-// ── Mesh builder — one merged BufferGeometry for all blocks ──
-// Only adds faces adjacent to AIR (or GLASS for opaque blocks)
-const FACE_DEF = [
-  // [normal, quad verts (4x3), color index]
-  {n:[0,1,0],  vs:[[0,1,0],[1,1,0],[1,1,1],[0,1,1]], ci:0}, // top
-  {n:[0,-1,0], vs:[[0,0,1],[1,0,1],[1,0,0],[0,0,0]], ci:2}, // bottom
-  {n:[-1,0,0], vs:[[0,0,0],[0,1,0],[0,1,1],[0,0,1]], ci:1}, // -X
-  {n:[1,0,0],  vs:[[1,0,1],[1,1,1],[1,1,0],[1,0,0]], ci:1}, // +X
-  {n:[0,0,-1], vs:[[1,0,0],[1,1,0],[0,1,0],[0,0,0]], ci:1}, // -Z
-  {n:[0,0,1],  vs:[[0,0,1],[0,1,1],[1,1,1],[1,0,1]], ci:1}, // +Z
-];
-const NBR = [[0,1,0],[0,-1,0],[-1,0,0],[1,0,0],[0,0,-1],[0,0,1]];
-
-let worldMesh = null;
-
-function buildMesh(){
-  if(worldMesh){ scene.remove(worldMesh); worldMesh.geometry.dispose(); }
-
-  const pos=[], nor=[], col=[], idx=[];
-  let vi=0;
-
-  for(let x=0;x<WX;x++) for(let y=0;y<WY;y++) for(let z=0;z<WZ;z++){
-    const b=gb(x,y,z);
-    if(b===B.AIR) continue;
-    const fc=BCOL[b]||[0x808080,0x606060,0x404040];
-    const isGlass=(b===B.GLASS);
-
-    for(let fi=0;fi<6;fi++){
-      const [nx,ny,nz]=NBR[fi];
-      const nb=gb(x+nx,y+ny,z+nz);
-      // Show face if neighbor is air; for glass also show if neighbor is other glass
-      if(nb!==B.AIR&&!(isGlass&&nb===B.GLASS)) continue;
-
-      const fd=FACE_DEF[fi];
-      const hex=fc[fd.ci];
-      const r=((hex>>16)&0xff)/255, g=((hex>>8)&0xff)/255, bl_=(hex&0xff)/255;
-
-      for(const [vx,vy,vz] of fd.vs){
-        pos.push(x+vx, y+vy, z+vz);
-        nor.push(...fd.n);
-        col.push(r,g,bl_);
-      }
-      idx.push(vi,vi+1,vi+2, vi,vi+2,vi+3);
-      vi+=4;
-    }
-  }
-
-  const geo=new THREE.BufferGeometry();
-  geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));
-  geo.setAttribute('normal',  new THREE.Float32BufferAttribute(nor,3));
-  geo.setAttribute('color',   new THREE.Float32BufferAttribute(col,3));
-  geo.setIndex(idx);
-
-  const mat=new THREE.MeshLambertMaterial({vertexColors:true});
-  worldMesh=new THREE.Mesh(geo,mat);
-  scene.add(worldMesh);
-}
-buildMesh();
-
-// ── Player spawn ─────────────────────────────────────────────
-const spawnX=WX/2+0.5, spawnZ=WZ/2+0.5;
-let spawnY=20;
-for(let y=WY-1;y>0;y--){if(gb(~~spawnX,y,~~spawnZ)!==B.AIR){spawnY=y+1.8;break;}}
-camera.position.set(spawnX, spawnY, spawnZ);
-
-// ── Physics state ────────────────────────────────────────────
-let vy=0, onGround=false;
-const GRAV=0.055, JUMP=-0.44, SPEED=0.09;
-
-function solid(x,y,z){const b=gb(x,y,z);return b!==B.AIR&&b!==B.GLASS;}
-
-// ── Input ────────────────────────────────────────────────────
-const keys={};
-let mleft=false, mright=false, locked=false, started=false;
-let selBlock=B.GRASS, actionTimer=0;
-
-const raycaster = new THREE.Raycaster();
-raycaster.far = 7;
-
-document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
-document.addEventListener('keyup',  e=>{keys[e.code]=false;});
-
-document.addEventListener('pointerlockchange',()=>{
-  locked=document.pointerLockElement===cv;
-  if(started){
-    document.getElementById('paused').style.display=locked?'none':'flex';
-    document.getElementById('xhair').style.display=locked?'block':'none';
-  }
-});
-document.addEventListener('mousemove',e=>{
-  if(!locked)return;
-  camera.rotation.y -= e.movementX*.0022;
-  camera.rotation.x = Math.max(-Math.PI/2+.01, Math.min(Math.PI/2-.01, camera.rotation.x - e.movementY*.0022));
-});
-document.addEventListener('mousedown',e=>{
-  if(!locked)return;
-  if(e.button===0){mleft=true; doBlockAction();}
-  if(e.button===2){mright=true; doBlockAction();}
-});
-document.addEventListener('mouseup',e=>{
-  if(e.button===0)mleft=false;
-  if(e.button===2)mright=false;
-});
-cv.addEventListener('contextmenu',e=>e.preventDefault());
-cv.addEventListener('click',()=>{if(started&&!locked)cv.requestPointerLock();});
-
-document.getElementById('start-btn').addEventListener('click',()=>{
-  document.getElementById('overlay').style.display='none';
-  document.getElementById('hud').style.display='flex';
-  document.getElementById('toolbar').style.display='flex';
-  document.getElementById('worm').style.display='block';
-  started=true;
-  cv.requestPointerLock();
-});
-
-document.querySelectorAll('.slot').forEach(s=>{
-  s.addEventListener('click',()=>{
-    document.querySelectorAll('.slot').forEach(x=>x.classList.remove('active'));
-    s.classList.add('active');
-    selBlock=Number(s.dataset.b);
-  });
-});
-document.addEventListener('wheel',e=>{
-  const sl=[...document.querySelectorAll('.slot')];
-  const ci=sl.findIndex(s=>s.classList.contains('active'));
-  const ni=(ci+(e.deltaY>0?1:-1)+sl.length)%sl.length;
-  sl.forEach(s=>s.classList.remove('active'));
-  sl[ni].classList.add('active');
-  selBlock=Number(sl[ni].dataset.b);
-},{passive:true});
-
-// ── Block interaction ────────────────────────────────────────
-function doBlockAction(){
-  if(!locked||!worldMesh) return;
-  raycaster.setFromCamera(new THREE.Vector2(0,0), camera);
-  const hits = raycaster.intersectObject(worldMesh);
-  if(!hits.length) return;
-  const hit = hits[0];
-  const n = hit.face.normal;
-
-  if(mleft){
-    // Mine: move slightly INTO the face to get the block
-    const p = hit.point.clone().addScaledVector(n, -0.5);
-    const bx=~~p.x, by=~~p.y, bz=~~p.z;
-    if(gb(bx,by,bz)!==B.AIR&&gb(bx,by,bz)!==B.BEDROCK){
-      document.getElementById('blk').textContent=BN[gb(bx,by,bz)];
-      sb(bx,by,bz,B.AIR);
-      buildMesh();
-      seal('BREAK|'+BN[gb(bx,by,bz)]);
-    }
-  }
-  if(mright){
-    // Place: move slightly AWAY from face to get adjacent air cell
-    const p = hit.point.clone().addScaledVector(n, 0.5);
-    const bx=~~p.x, by=~~p.y, bz=~~p.z;
-    if(inW(bx,by,bz)&&gb(bx,by,bz)===B.AIR){
-      sb(bx,by,bz,selBlock);
-      buildMesh();
-      seal('PLACE|'+BN[selBlock]);
-    }
-  }
-}
-
-// ── Physics & movement ───────────────────────────────────────
-const dir3 = new THREE.Vector3();
-const right3 = new THREE.Vector3();
-const UP = new THREE.Vector3(0,1,0);
-
-function update(){
-  if(!locked) return;
-
-  // Direction vectors from camera yaw (ignore pitch for movement)
-  dir3.set(
-    -Math.sin(camera.rotation.y),
-    0,
-    -Math.cos(camera.rotation.y)
-  ).normalize();
-  right3.crossVectors(dir3, UP).normalize();
-
-  let mx=0, mz=0;
-  if(keys['KeyW']||keys['ArrowUp'])   {mx+=dir3.x;  mz+=dir3.z;}
-  if(keys['KeyS']||keys['ArrowDown']) {mx-=dir3.x;  mz-=dir3.z;}
-  if(keys['KeyA']||keys['ArrowLeft']) {mx-=right3.x; mz-=right3.z;}
-  if(keys['KeyD']||keys['ArrowRight']){mx+=right3.x; mz+=right3.z;}
-  const ml=Math.sqrt(mx*mx+mz*mz)||1;
-  const vx=mx/ml*SPEED, vz=mz/ml*SPEED;
-
-  const px=camera.position.x, py=camera.position.y, pz=camera.position.z;
-  const W2=0.28; // half-width
-
-  // X movement
-  const nx=px+vx;
-  if(!solid(nx+W2,py-.1,pz)&&!solid(nx+W2,py-1,pz)&&!solid(nx-W2,py-.1,pz)&&!solid(nx-W2,py-1,pz))
-    camera.position.x=nx;
-
-  // Z movement
-  const nz=pz+vz;
-  if(!solid(px,py-.1,nz+W2)&&!solid(px,py-1,nz+W2)&&!solid(px,py-.1,nz-W2)&&!solid(px,py-1,nz-W2))
-    camera.position.z=nz;
-
-  // Jump + gravity
-  vy+=GRAV;
-  if(keys['Space']&&onGround){vy=JUMP;onGround=false;}
-
-  const ny=py+vy;
-  if(vy>0&&solid(camera.position.x,ny-1.85,camera.position.z)){
-    onGround=true; vy=0;
-  } else if(vy<0&&solid(camera.position.x,ny-.05,camera.position.z)){
-    vy=0;
-  } else {
-    camera.position.y=ny; onGround=false;
-  }
-
-  // Clamp to world
-  camera.position.x=Math.max(.5,Math.min(WX-.5,camera.position.x));
-  camera.position.y=Math.max(2,  Math.min(WY-1,  camera.position.y));
-  camera.position.z=Math.max(.5,Math.min(WZ-.5,camera.position.z));
-
-  // Aim highlight
-  actionTimer++;
-  if(actionTimer>8){
-    actionTimer=0;
-    if(worldMesh){
-      raycaster.setFromCamera(new THREE.Vector2(0,0),camera);
-      const hits=raycaster.intersectObject(worldMesh);
-      if(hits.length){
-        const n=hits[0].face.normal;
-        const p=hits[0].point.clone().addScaledVector(n,-0.5);
-        document.getElementById('blk').textContent=BN[gb(~~p.x,~~p.y,~~p.z)]||'?';
-      } else {
-        document.getElementById('blk').textContent='–';
-      }
-    }
-  }
-
-  document.getElementById('pos').textContent=
-    `${~~camera.position.x},${~~camera.position.y},${~~camera.position.z}`;
-}
-
-// ── WORM ────────────────────────────────────────────────────
-let wormH='GENESIS';
-async function seal(evt){
-  const msg=wormH+'|'+evt+'|'+Date.now();
-  if(window.crypto?.subtle){
-    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
-    wormH=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
-  }
-  document.getElementById('wseal').textContent=wormH.slice(0,14)+'...';
-  document.getElementById('worm').textContent='WORM: '+wormH;
-}
-seal('WORLD_GEN');
-
-// ── Render loop ──────────────────────────────────────────────
-let last=0, frames=0;
-function loop(ts){
-  frames++;
-  if(ts-last>1000){document.getElementById('fps').textContent=frames;frames=0;last=ts;}
-  update();
-  renderer.render(scene,camera);
-  requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
-</script>
+<footer>BOB'S GAMES · EVIDENCE OR SILENCE · WORM SEALED</footer>
 </body>
 </html>
