@@ -6,45 +6,21 @@
 <title>BOB MINECRAFT — Sovereign Voxel World</title>
 <style>
 * { margin:0; padding:0; box-sizing:border-box; }
-body { background:#040406; overflow:hidden; font-family:'Courier New',monospace; color:#ffd700; }
+body { background:#000; overflow:hidden; font-family:'Courier New',monospace; color:#ffd700; }
 canvas { display:block; }
 #overlay {
-  position:fixed; inset:0; background:rgba(0,0,0,.92);
+  position:fixed; inset:0; background:rgba(0,0,0,.93);
   display:flex; align-items:center; justify-content:center;
-  flex-direction:column; gap:18px; z-index:30;
+  flex-direction:column; gap:20px; z-index:30;
 }
-#overlay h1 { font-size:clamp(28px,5vw,52px); letter-spacing:.1em; text-shadow:0 0 30px rgba(255,215,0,.4); }
-#overlay p  { color:#505060; font-size:13px; letter-spacing:.12em; text-align:center; line-height:1.8; }
+#overlay h1 { font-size:clamp(26px,5vw,54px); letter-spacing:.1em; text-shadow:0 0 28px rgba(255,215,0,.4); }
+#overlay p  { color:#505060; font-size:12px; letter-spacing:.1em; text-align:center; line-height:2; }
 #overlay button {
   background:transparent; border:1px solid #b8860b; color:#ffd700;
-  font-family:inherit; font-size:14px; padding:12px 32px;
-  cursor:pointer; letter-spacing:.12em; text-transform:uppercase;
-  transition:all .2s;
+  font-family:inherit; font-size:14px; padding:12px 36px;
+  cursor:pointer; letter-spacing:.12em;
 }
 #overlay button:hover { background:#b8860b; color:#000; }
-#hud {
-  position:fixed; top:0; left:0; right:0; padding:6px 14px;
-  background:rgba(0,0,0,.88); display:none; gap:18px; align-items:center;
-  font-size:11px; border-bottom:1px solid #1c1c24; z-index:10; flex-wrap:wrap;
-}
-#hud span { color:#505060; }
-#hud b    { color:#00ff88; }
-#worm {
-  position:fixed; bottom:0; left:0; right:0; padding:4px 14px;
-  background:rgba(0,0,0,.9); font-size:9px; color:#b8860b; opacity:.45;
-  border-top:1px solid #1c1c24; z-index:10; display:none;
-}
-#toolbar {
-  position:fixed; bottom:32px; left:50%; transform:translateX(-50%);
-  display:none; gap:4px; background:rgba(0,0,0,.8);
-  padding:6px; border:1px solid #1c1c24; border-radius:2px; z-index:10;
-}
-.slot {
-  width:38px; height:38px; border:1px solid #333;
-  display:flex; align-items:center; justify-content:center;
-  font-size:19px; cursor:pointer; transition:border-color .15s;
-}
-.slot.active { border-color:#ffd700; box-shadow:0 0 8px rgba(255,215,0,.4); }
 #paused {
   position:fixed; inset:0; background:rgba(0,0,0,.75);
   display:none; align-items:center; justify-content:center;
@@ -52,6 +28,28 @@ canvas { display:block; }
 }
 #paused h2 { font-size:28px; letter-spacing:.1em; }
 #paused p  { color:#505060; font-size:12px; }
+#hud {
+  position:fixed; top:0; left:0; right:0; padding:6px 14px;
+  background:rgba(0,0,0,.85); display:none; gap:18px; align-items:center;
+  font-size:11px; border-bottom:1px solid #1c1c24; z-index:10; flex-wrap:wrap;
+}
+#hud span { color:#505060; }
+#hud b    { color:#00ff88; }
+#toolbar {
+  position:fixed; bottom:28px; left:50%; transform:translateX(-50%);
+  display:none; gap:4px; background:rgba(0,0,0,.82);
+  padding:6px; border:1px solid #1c1c24; z-index:10;
+}
+.slot {
+  width:38px; height:38px; border:1px solid #2a2a2a;
+  display:flex; align-items:center; justify-content:center; font-size:18px; cursor:pointer;
+}
+.slot.active { border-color:#ffd700; box-shadow:0 0 8px rgba(255,215,0,.35); }
+#worm {
+  position:fixed; bottom:0; left:0; right:0; padding:4px 14px;
+  background:rgba(0,0,0,.9); font-size:9px; color:#b8860b; opacity:.4;
+  border-top:1px solid #1c1c24; z-index:10; display:none;
+}
 </style>
 </head>
 <body>
@@ -59,100 +57,81 @@ canvas { display:block; }
 <div id="overlay">
   <h1>BOB MINECRAFT</h1>
   <p>SOVEREIGN VOXEL WORLD · WORM SEALED<br>
-     WASD = move &nbsp;·&nbsp; SPACE = jump &nbsp;·&nbsp; SCROLL = select block<br>
-     LEFT CLICK = mine &nbsp;·&nbsp; RIGHT CLICK = place &nbsp;·&nbsp; ESC = pause</p>
+     WASD · move &nbsp;|&nbsp; SPACE · jump &nbsp;|&nbsp; SCROLL · select block<br>
+     LEFT CLICK · mine &nbsp;|&nbsp; RIGHT CLICK · place &nbsp;|&nbsp; ESC · pause</p>
   <button id="start-btn">ENTER THE WORLD</button>
 </div>
 
-<div id="paused">
-  <h2>PAUSED</h2>
-  <p>Click the canvas to resume</p>
-</div>
+<div id="paused"><h2>PAUSED</h2><p>Click canvas to resume</p></div>
 
 <div id="hud">
   <span style="color:#ffd700;font-weight:bold;letter-spacing:.1em">BOB MINECRAFT</span>
-  <span>POS: <b id="pos">0,0,0</b></span>
-  <span>BLOCK: <b id="blk">AIR</b></span>
+  <span>XYZ: <b id="pos">0,0,0</b></span>
+  <span>LOOKING AT: <b id="blk">–</b></span>
   <span>FPS: <b id="fps">0</b></span>
-  <span>DEPTH: <b id="depth">0m</b></span>
-  <span>WORM: <b id="wseal" style="color:#b8860b">...</b></span>
+  <span>WORM: <b id="wseal" style="color:#b8860b">init...</b></span>
 </div>
 
 <canvas id="c"></canvas>
 
 <div id="toolbar">
-  <div class="slot active" data-block="1" title="GRASS">🟩</div>
-  <div class="slot" data-block="2" title="DIRT">🟫</div>
-  <div class="slot" data-block="3" title="STONE">⬜</div>
-  <div class="slot" data-block="4" title="WOOD">🪵</div>
-  <div class="slot" data-block="5" title="GOLD">🟡</div>
-  <div class="slot" data-block="6" title="GLASS">◻️</div>
-  <div class="slot" data-block="7" title="LAVA">🟥</div>
-  <div class="slot" data-block="8" title="WATER">🟦</div>
+  <div class="slot active" data-b="1" title="GRASS">🟩</div>
+  <div class="slot" data-b="2" title="DIRT">🟫</div>
+  <div class="slot" data-b="3" title="STONE">⬜</div>
+  <div class="slot" data-b="4" title="WOOD">🪵</div>
+  <div class="slot" data-b="5" title="GOLD">🟡</div>
+  <div class="slot" data-b="6" title="GLASS">◻️</div>
+  <div class="slot" data-b="7" title="LAVA">🟥</div>
+  <div class="slot" data-b="8" title="SAND">🟨</div>
 </div>
 
-<div id="worm">WORM CHAIN: initializing...</div>
+<div id="worm">WORM: init...</div>
 
 <script>
-// ── Block types ────────────────────────────────────────────────
-const B = { AIR:0, GRASS:1, DIRT:2, STONE:3, WOOD:4, GOLD:5, GLASS:6, LAVA:7, WATER:8, BEDROCK:9 };
-const BNAMES = ['AIR','GRASS','DIRT','STONE','WOOD','GOLD ORE','GLASS','LAVA','WATER','BEDROCK'];
+// ── Block IDs ────────────────────────────────────────────────
+const B = { AIR:0,GRASS:1,DIRT:2,STONE:3,WOOD:4,GOLD:5,GLASS:6,LAVA:7,SAND:8,BEDROCK:9 };
+const BN = ['AIR','GRASS','DIRT','STONE','WOOD','GOLD','GLASS','LAVA','SAND','BEDROCK'];
 
-// Colors: [bright-face, dark-face]  hex only (rgba handled separately)
-const BCOLORS = {
-  1: ['#4aaa4a','#2d8a2d'],
+// [light-face , dark-face]  — hex only; glass handled separately
+const BC = {
+  1: ['#4cb04c','#2d8a2d'],
   2: ['#8a6240','#6a4220'],
-  3: ['#8a8a9a','#666676'],
+  3: ['#909099','#68687a'],
   4: ['#a07040','#7a5020'],
-  5: ['#ffd700','#c8a800'],
-  6: ['rgba(180,210,255,0.38)','rgba(160,195,245,0.38)'],
-  7: ['#ff5500','#dd3300'],
-  8: ['rgba(20,80,220,0.55)','rgba(10,55,180,0.55)'],
+  5: ['#ffd700','#c8a000'],
+  6: null,  // transparent — handled inline
+  7: ['#ff5500','#cc3300'],
+  8: ['#d4b84a','#b09030'],
   9: ['#181820','#0e0e16'],
 };
 
-// ── World ─────────────────────────────────────────────────────
+// ── World 64×40×64 ───────────────────────────────────────────
 const WX=64, WY=40, WZ=64;
-const world = new Uint8Array(WX * WY * WZ);
+const world = new Uint8Array(WX*WY*WZ);
+function inW(x,y,z){return x>=0&&x<WX&&y>=0&&y<WY&&z>=0&&z<WZ;}
+function wi(x,y,z){return y*WX*WZ+z*WX+x;}
+function gb(x,y,z){x=~~x;y=~~y;z=~~z;return inW(x,y,z)?world[wi(x,y,z)]:B.BEDROCK;}
+function sb(x,y,z,v){x=~~x;y=~~y;z=~~z;if(inW(x,y,z))world[wi(x,y,z)]=v;}
 
-function wi(x,y,z) { return y*WX*WZ + z*WX + x; }
-function inW(x,y,z) { return x>=0&&x<WX&&y>=0&&y<WY&&z>=0&&z<WZ; }
-function getB(x,y,z) {
-  x=~~x; y=~~y; z=~~z;
-  if (!inW(x,y,z)) return B.BEDROCK;
-  return world[wi(x,y,z)];
-}
-function setB(x,y,z,b) {
-  x=~~x; y=~~y; z=~~z;
-  if (inW(x,y,z)) world[wi(x,y,z)] = b;
-}
-
-function genWorld() {
-  for (let x=0;x<WX;x++) for (let z=0;z<WZ;z++) {
-    const h = ~~(14 + 4*Math.sin(x*.14) + 3*Math.cos(z*.11) + 2*Math.sin((x+z)*.07));
-    for (let y=0;y<WY;y++) {
-      if      (y===0)    setB(x,y,z, B.BEDROCK);
-      else if (y < h-3)  setB(x,y,z, B.STONE);
-      else if (y < h)    setB(x,y,z, B.DIRT);
-      else if (y === h)  setB(x,y,z, B.GRASS);
+function genWorld(){
+  for(let x=0;x<WX;x++) for(let z=0;z<WZ;z++){
+    const h=~~(14+4*Math.sin(x*.14)+3*Math.cos(z*.11)+2*Math.sin((x+z)*.07));
+    for(let y=0;y<WY;y++){
+      if(y===0)sb(x,y,z,B.BEDROCK);
+      else if(y<h-3)sb(x,y,z,B.STONE);
+      else if(y<h)  sb(x,y,z,B.DIRT);
+      else if(y===h)sb(x,y,z,B.GRASS);
     }
   }
-  // Gold ore
-  for (let i=0;i<140;i++) {
-    const gx=~~(Math.random()*WX), gy=1+~~(Math.random()*10), gz=~~(Math.random()*WZ);
-    if (getB(gx,gy,gz)===B.STONE) setB(gx,gy,gz, B.GOLD);
+  for(let i=0;i<150;i++){
+    const gx=~~(Math.random()*WX),gy=1+~~(Math.random()*10),gz=~~(Math.random()*WZ);
+    if(gb(gx,gy,gz)===B.STONE)sb(gx,gy,gz,B.GOLD);
   }
-  // Trees
-  for (let i=0;i<22;i++) {
-    const tx=3+~~(Math.random()*(WX-6)), tz=3+~~(Math.random()*(WZ-6));
-    for (let y=WY-1;y>0;y--) {
-      if (getB(tx,y,tz)===B.GRASS) {
-        for (let th=1;th<=4;th++) setB(tx,y+th,tz, B.WOOD);
-        for (let lx=-2;lx<=2;lx++) for (let lz=-2;lz<=2;lz++) {
-          const ly=y+4;
-          if (Math.abs(lx)+Math.abs(lz)<=3 && getB(tx+lx,ly,tz+lz)===B.AIR)
-            setB(tx+lx,ly,tz+lz, B.GRASS);
-        }
+  for(let i=0;i<24;i++){
+    const tx=3+~~(Math.random()*(WX-6)),tz=3+~~(Math.random()*(WZ-6));
+    for(let y=WY-1;y>0;y--){
+      if(gb(tx,y,tz)===B.GRASS){
+        for(let th=1;th<=4;th++) sb(tx,y+th,tz,B.WOOD);
         break;
       }
     }
@@ -160,309 +139,302 @@ function genWorld() {
 }
 genWorld();
 
-// ── Player ────────────────────────────────────────────────────
-const P = {
-  x: WX/2+.5, y: 0, z: WZ/2+.5,
-  yaw: Math.PI*.5, pitch: 0,
-  vy: 0, onGround: false,
-  sel: B.GRASS
-};
-// Spawn on surface
-for (let y=WY-1;y>0;y--) {
-  if (getB(~~P.x,y,~~P.z) !== B.AIR) { P.y = y + 2.1; break; }
-}
+// ── Player ──────────────────────────────────────────────────
+const P={x:WX/2+.5,y:0,z:WZ/2+.5,yaw:Math.PI*.5,pitch:0,vy:0,onGround:false,sel:B.GRASS};
+(function spawnAboveSurface(){
+  for(let y=WY-1;y>0;y--){
+    if(gb(~~P.x,y,~~P.z)!==B.AIR){P.y=y+2.2;break;}
+  }
+})();
 
-// ── Canvas ────────────────────────────────────────────────────
-const canvas = document.getElementById('c');
-const ctx = canvas.getContext('2d', { alpha:false });
-let W=0, H=0;
-function resize() {
-  canvas.width  = window.innerWidth;
-  canvas.height = window.innerHeight;
-  W = canvas.width; H = canvas.height;
-}
+// ── Canvas ──────────────────────────────────────────────────
+const CV=document.getElementById('c');
+const CX=CV.getContext('2d',{alpha:false});
+let W=0,H=0;
+function resize(){CV.width=window.innerWidth;CV.height=window.innerHeight;W=CV.width;H=CV.height;}
 resize();
-window.addEventListener('resize', resize);
+window.addEventListener('resize',resize);
 
-// ── Input ─────────────────────────────────────────────────────
-const keys = {};
-let mleft=false, mright=false, locked=false, started=false;
-let mineTimer=0;
+// ── Input ───────────────────────────────────────────────────
+const keys={};
+let mleft=false,mright=false,locked=false,started=false;
+let actionTimer=0;
 
-document.addEventListener('keydown', e => {
-  keys[e.code] = true;
-  if (e.code==='Space') e.preventDefault();
+document.addEventListener('keydown',e=>{keys[e.code]=true;if(e.code==='Space')e.preventDefault();});
+document.addEventListener('keyup',e=>{keys[e.code]=false;});
+
+document.addEventListener('pointerlockchange',()=>{
+  locked=document.pointerLockElement===CV;
+  if(started) document.getElementById('paused').style.display=locked?'none':'flex';
 });
-document.addEventListener('keyup', e => { keys[e.code] = false; });
-
-document.addEventListener('pointerlockchange', () => {
-  locked = document.pointerLockElement === canvas;
-  document.getElementById('paused').style.display = locked ? 'none' : (started ? 'flex' : 'none');
+document.addEventListener('mousemove',e=>{
+  if(!locked)return;
+  P.yaw+=e.movementX*.0022;
+  P.pitch=Math.max(-1.3,Math.min(1.3,P.pitch+e.movementY*.0022));
 });
-
-document.addEventListener('mousemove', e => {
-  if (!locked) return;
-  P.yaw   += e.movementX * .0022;
-  P.pitch  = Math.max(-1.3, Math.min(1.3, P.pitch + e.movementY * .0022));
+document.addEventListener('mousedown',e=>{
+  if(!locked)return;
+  if(e.button===0){mleft=true;actionTimer=20;}
+  if(e.button===2){mright=true;actionTimer=20;}
 });
-
-document.addEventListener('mousedown', e => {
-  if (!locked) return;
-  if (e.button===0) { mleft=true;  mineTimer=9; }
-  if (e.button===2) { mright=true; mineTimer=9; }
+document.addEventListener('mouseup',e=>{
+  if(e.button===0)mleft=false;
+  if(e.button===2)mright=false;
 });
-document.addEventListener('mouseup', e => {
-  if (e.button===0) mleft=false;
-  if (e.button===2) mright=false;
-});
-canvas.addEventListener('contextmenu', e => e.preventDefault());
-canvas.addEventListener('click', () => { if (started && !locked) canvas.requestPointerLock(); });
+CV.addEventListener('contextmenu',e=>e.preventDefault());
+CV.addEventListener('click',()=>{if(started&&!locked)CV.requestPointerLock();});
 
-// Start button
-document.getElementById('start-btn').addEventListener('click', () => {
-  document.getElementById('overlay').style.display = 'none';
-  document.getElementById('hud').style.display = 'flex';
-  document.getElementById('toolbar').style.display = 'flex';
-  document.getElementById('worm').style.display = 'block';
-  started = true;
-  canvas.requestPointerLock();
+document.getElementById('start-btn').addEventListener('click',()=>{
+  document.getElementById('overlay').style.display='none';
+  document.getElementById('hud').style.display='flex';
+  document.getElementById('toolbar').style.display='flex';
+  document.getElementById('worm').style.display='block';
+  started=true;
+  CV.requestPointerLock();
 });
 
-// Toolbar
-document.querySelectorAll('.slot').forEach(s => {
-  s.addEventListener('click', () => {
-    document.querySelectorAll('.slot').forEach(x => x.classList.remove('active'));
+document.querySelectorAll('.slot').forEach(s=>{
+  s.addEventListener('click',()=>{
+    document.querySelectorAll('.slot').forEach(x=>x.classList.remove('active'));
     s.classList.add('active');
-    P.sel = Number(s.dataset.block);
+    P.sel=Number(s.dataset.b);
   });
 });
-document.addEventListener('wheel', e => {
-  const slots = [...document.querySelectorAll('.slot')];
-  const cur = slots.findIndex(s => s.classList.contains('active'));
-  const next = (cur + (e.deltaY>0?1:-1) + slots.length) % slots.length;
-  slots.forEach(s => s.classList.remove('active'));
-  slots[next].classList.add('active');
-  P.sel = Number(slots[next].dataset.block);
-}, { passive:true });
+document.addEventListener('wheel',e=>{
+  const sl=[...document.querySelectorAll('.slot')];
+  const ci=sl.findIndex(s=>s.classList.contains('active'));
+  const ni=(ci+(e.deltaY>0?1:-1)+sl.length)%sl.length;
+  sl.forEach(s=>s.classList.remove('active'));
+  sl[ni].classList.add('active');
+  P.sel=Number(sl[ni].dataset.b);
+},{passive:true});
 
-// ── 3D DDA Ray Cast ───────────────────────────────────────────
-function castRay(ox, oy, oz, dx, dy, dz, maxD) {
-  const eps = 1e-9;
-  let x=~~ox, y=~~oy, z=~~oz;
-  const sx=dx>0?1:-1, sy=dy>0?1:-1, sz=dz>0?1:-1;
-  const ddx=Math.abs(1/(Math.abs(dx)>eps?dx:eps));
-  const ddy=Math.abs(1/(Math.abs(dy)>eps?dy:eps));
-  const ddz=Math.abs(1/(Math.abs(dz)>eps?dz:eps));
+// ── 3D DDA (for aiming/mining) ───────────────────────────────
+function ray3D(ox,oy,oz,dx,dy,dz,maxD){
+  const E=1e-9;
+  let x=~~ox,y=~~oy,z=~~oz;
+  const sx=dx>0?1:-1,sy=dy>0?1:-1,sz=dz>0?1:-1;
+  const ddx=1/Math.max(Math.abs(dx),E),ddy=1/Math.max(Math.abs(dy),E),ddz=1/Math.max(Math.abs(dz),E);
   let tx=(dx>0?x+1-ox:ox-x)*ddx;
   let ty=(dy>0?y+1-oy:oy-y)*ddy;
   let tz=(dz>0?z+1-oz:oz-z)*ddz;
-  let px=x, py=y, pz=z, faceDir='z', dist=0;
-
-  for (let i=0;i<96;i++) {
-    const b = getB(x,y,z);
-    if (b !== B.AIR) return { wx:x,wy:y,wz:z, px,py,pz, block:b, faceDir, dist };
-    px=x; py=y; pz=z;
-    if (tx<ty && tx<tz) { x+=sx; dist=tx; tx+=ddx; faceDir='x'; }
-    else if (ty<tz)      { y+=sy; dist=ty; ty+=ddy; faceDir='y'; }
-    else                 { z+=sz; dist=tz; tz+=ddz; faceDir='z'; }
-    if (dist > maxD) break;
+  let px=x,py=y,pz=z;
+  for(let i=0;i<96;i++){
+    const b=gb(x,y,z);
+    if(b!==B.AIR&&b!==B.GLASS)return{wx:x,wy:y,wz:z,px,py,pz,block:b};
+    px=x;py=y;pz=z;
+    if(tx<ty&&tx<tz){x+=sx;if(tx>maxD)break;tx+=ddx;}
+    else if(ty<tz)  {y+=sy;if(ty>maxD)break;ty+=ddy;}
+    else            {z+=sz;if(tz>maxD)break;tz+=ddz;}
   }
   return null;
 }
 
-// ── Renderer ──────────────────────────────────────────────────
-const COLW = 3; // px per column strip
+// ── Renderer (2D XZ DDA + vertical span projection) ──────────
+// This is the KEY fix: cast rays in XZ plane only, then project
+// the full height of each block column onto the screen.
+// This always renders terrain regardless of Y position.
 
-function render() {
-  const cx = Math.cos(P.yaw), cz = Math.sin(P.yaw);
-  const eyeX = P.x, eyeY = P.y - 0.3, eyeZ = P.z;
-  // Camera plane (perpendicular to forward, scaled by HFOV)
-  const plX = -cz * 0.66, plZ = cx * 0.66;
-  const horizon = H * .5 + P.pitch * H * .38; // pitch shifts horizon line
-  const projF   = H * .66; // projection factor
+const CW=2; // column strip width in pixels
+
+function hexToRgb(h){
+  return[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+}
+
+function render(){
+  const fwd_x=Math.cos(P.yaw), fwd_z=Math.sin(P.yaw);
+  // Camera plane: perpendicular to forward, scaled by tan(HFOV/2)=0.66
+  const pl_x=-fwd_z*0.66, pl_z=fwd_x*0.66;
+  const eyeY=P.y-0.3; // eye height
+  const horizon=H*0.5+P.pitch*H*0.4; // screen Y of horizon (pitch shifts it)
+  const projF=H*0.66; // vertical projection factor
 
   // Sky
-  const skyGrad = ctx.createLinearGradient(0,0,0,horizon);
-  skyGrad.addColorStop(0,'#020208');
-  skyGrad.addColorStop(1,'#06061a');
-  ctx.fillStyle = skyGrad;
-  ctx.fillRect(0, 0, W, Math.max(0, horizon));
+  CX.fillStyle='#030210';
+  CX.fillRect(0,0,W,Math.max(0,~~horizon));
+  // Ground base (far away floor color)
+  CX.fillStyle='#0d0905';
+  CX.fillRect(0,~~horizon,W,H);
 
-  // Ground base (shows when no block hit below)
-  ctx.fillStyle = '#120d06';
-  ctx.fillRect(0, horizon, W, H - horizon);
+  for(let col=0;col<W;col+=CW){
+    const camX=2*col/W-1; // -1..+1 across screen
 
-  ctx.save();
+    // Ray direction for this column
+    const rdx=fwd_x+pl_x*camX;
+    const rdz=fwd_z+pl_z*camX;
 
-  for (let col=0; col<W; col+=COLW) {
-    const camX = 2*col/W - 1; // -1..+1
+    // 2D DDA setup in XZ
+    const E=1e-10;
+    let mapX=~~P.x, mapZ=~~P.z;
+    const sx=rdx>=0?1:-1, sz=rdz>=0?1:-1;
+    const ddx=Math.abs(rdx)>E?Math.abs(1/rdx):1e9;
+    const ddz=Math.abs(rdz)>E?Math.abs(1/rdz):1e9;
+    let sdx=(rdx>=0?mapX+1-P.x:P.x-mapX)*ddx;
+    let sdz=(rdz>=0?mapZ+1-P.z:P.z-mapZ)*ddz;
+    let faceIsX=sdx<sdz; // which face was stepped last
 
-    // Ray direction: fix the sign — must be (dir + plane * camX), plane uses -cz/cx
-    let rdx = cx + plX * camX;
-    let rdz = cz + plZ * camX;
-    let rdy = -Math.tan(P.pitch);   // vertical component from pitch
+    // Advance ONE step first — skip player's own cell
+    if(sdx<sdz){mapX+=sx;sdx+=ddx;faceIsX=true;}
+    else        {mapZ+=sz;sdz+=ddz;faceIsX=false;}
 
-    // Normalize for 3D DDA
-    const rlen = Math.sqrt(rdx*rdx + rdy*rdy + rdz*rdz);
-    rdx /= rlen; rdy /= rlen; rdz /= rlen;
-
-    const hit = castRay(eyeX, eyeY, eyeZ, rdx, rdy, rdz, 22);
-    if (!hit) continue;
-
-    // Perpendicular distance — project hit vector onto forward XZ direction
-    // This avoids fisheye distortion
-    const hx = hit.wx + .5 - eyeX;
-    const hz = hit.wz + .5 - eyeZ;
-    const perpDist = Math.max(0.1, hx*cx + hz*cz);
-
-    // Project top and bottom of the hit block onto screen Y
-    const blockTop = hit.wy + 1;
-    const blockBot = hit.wy;
-    const screenTop = horizon - ((blockTop - eyeY) / perpDist) * projF;
-    const screenBot = horizon - ((blockBot - eyeY) / perpDist) * projF;
-
-    const dt = Math.max(0,   ~~screenTop);
-    const db = Math.min(H-1, ~~screenBot);
-    if (db <= dt) continue;
-
-    // Pick face color (x-face = dark, z-face = bright, y-face = top)
-    const cols = BCOLORS[hit.block] || ['#888','#666'];
-    let color = (hit.faceDir === 'x') ? cols[1] : cols[0];
-
-    // Distance fog
-    const fog = Math.min(1, perpDist / 20);
-
-    if (color.startsWith('#')) {
-      let r = parseInt(color.slice(1,3),16)||80;
-      let g = parseInt(color.slice(3,5),16)||80;
-      let b = parseInt(color.slice(5,7),16)||80;
-      r = ~~(r*(1-fog) + 3*fog);
-      g = ~~(g*(1-fog) + 3*fog);
-      b = ~~(b*(1-fog) + 8*fog);
-      ctx.fillStyle = `rgb(${r},${g},${b})`;
-      ctx.globalAlpha = 1;
-    } else {
-      // rgba (glass, water)
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 1 - fog * .6;
+    // Walk until we find a column with any solid block
+    let hitX=-1,hitZ=-1;
+    for(let i=0;i<44;i++){
+      // Check if any Y in this XZ column is solid
+      for(let y=1;y<WY;y++){
+        if(gb(mapX,y,mapZ)!==B.AIR){hitX=mapX;hitZ=mapZ;break;}
+      }
+      if(hitX>=0)break;
+      if(sdx<sdz){mapX+=sx;sdx+=ddx;faceIsX=true;}
+      else        {mapZ+=sz;sdz+=ddz;faceIsX=false;}
     }
+    if(hitX<0)continue;
 
-    ctx.fillRect(col, dt, COLW, db - dt);
+    // Perpendicular distance — project hit cell center onto view direction
+    // Using cell center (hitX+0.5) avoids fisheye without needing exact wall crossing
+    const dx_=hitX+0.5-P.x, dz_=hitZ+0.5-P.z;
+    const pd=Math.max(0.2, dx_*fwd_x + dz_*fwd_z);
+
+    const fog=Math.min(1,pd/22);
+
+    // Render all solid vertical spans in this XZ column
+    // Scan from top (WY-1) down to 1, grouping consecutive solid blocks
+    let yy=WY-1;
+    while(yy>=1){
+      const bl=gb(hitX,yy,hitZ);
+      if(bl!==B.AIR){
+        // Scan down to find bottom of this solid run
+        const yTop=yy;
+        while(yy>=1&&gb(hitX,yy,hitZ)!==B.AIR)yy--;
+        const yBot=yy+1;
+
+        // Project top-face and bottom-face onto screen Y
+        // sTop = screen Y of the TOP of the block (yTop+1 in world)
+        // sBot = screen Y of the BOTTOM of the block (yBot in world)
+        const sTop=horizon-((yTop+1-eyeY)/pd)*projF;
+        const sBot=horizon-((yBot  -eyeY)/pd)*projF;
+        const dt=Math.max(0,~~sTop);
+        const db=Math.min(H,~~sBot);
+        if(db<=dt){continue;}
+
+        // Pick face color
+        const cols=BC[bl];
+        if(!cols){
+          // Glass — semi-transparent blue
+          CX.globalAlpha=0.35*(1-fog*.7);
+          CX.fillStyle='#aaddff';
+          CX.fillRect(col,dt,CW,db-dt);
+          CX.globalAlpha=1;
+          continue;
+        }
+        // X face = darker, Z face = lighter
+        const hex=faceIsX?cols[1]:cols[0];
+        const[r,g,b]=hexToRgb(hex);
+        const rf=~~(r*(1-fog)+3*fog);
+        const gf=~~(g*(1-fog)+3*fog);
+        const bf=~~(b*(1-fog)+8*fog);
+        CX.fillStyle=`rgb(${rf},${gf},${bf})`;
+        CX.fillRect(col,dt,CW,db-dt);
+      } else {
+        yy--;
+      }
+    }
   }
-
-  ctx.restore();
-  ctx.globalAlpha = 1;
 
   // Crosshair
-  if (locked) {
-    ctx.strokeStyle = 'rgba(255,255,255,.75)';
-    ctx.lineWidth = 1.5;
-    const cx2 = W/2, cy2 = H/2;
-    ctx.beginPath();
-    ctx.moveTo(cx2-10,cy2); ctx.lineTo(cx2+10,cy2);
-    ctx.moveTo(cx2,cy2-10); ctx.lineTo(cx2,cy2+10);
-    ctx.stroke();
+  if(locked){
+    CX.strokeStyle='rgba(255,255,255,.72)';
+    CX.lineWidth=1.5;
+    CX.beginPath();
+    CX.moveTo(W/2-10,H/2);CX.lineTo(W/2+10,H/2);
+    CX.moveTo(W/2,H/2-10);CX.lineTo(W/2,H/2+10);
+    CX.stroke();
   }
 }
 
-// ── Physics ───────────────────────────────────────────────────
-const GRAV=0.055, JUMP=-0.42, SPEED=0.09;
+// ── Physics ─────────────────────────────────────────────────
+const GRAV=0.055,JUMP=-0.44,SPEED=0.09;
 
-function solidAt(x,y,z) {
-  const b = getB(x,y,z);
-  return b !== B.AIR && b !== B.WATER && b !== B.GLASS;
+function solid(x,y,z){
+  const b=gb(x,y,z);
+  return b!==B.AIR&&b!==B.GLASS&&b!==B.WATER;
 }
 
-function update() {
-  if (!locked) return;
+function update(){
+  if(!locked)return;
+  const cx=Math.cos(P.yaw),cz=Math.sin(P.yaw);
 
-  const cx2 = Math.cos(P.yaw), cz2 = Math.sin(P.yaw);
+  // WASD movement
+  let mx=0,mz=0;
+  if(keys['KeyW']||keys['ArrowUp'])   {mx+=cx;mz+=cz;}
+  if(keys['KeyS']||keys['ArrowDown']) {mx-=cx;mz-=cz;}
+  if(keys['KeyA']||keys['ArrowLeft']) {mx+=cz;mz-=cx;}
+  if(keys['KeyD']||keys['ArrowRight']){mx-=cz;mz+=cx;}
+  const ml=Math.sqrt(mx*mx+mz*mz)||1;
+  const vx=mx/ml*SPEED, vz=mz/ml*SPEED;
 
-  // Movement input
-  let mx=0, mz=0;
-  if (keys['KeyW']||keys['ArrowUp'])    { mx+=cx2; mz+=cz2; }
-  if (keys['KeyS']||keys['ArrowDown'])  { mx-=cx2; mz-=cz2; }
-  if (keys['KeyA']||keys['ArrowLeft'])  { mx+=cz2; mz-=cx2; }
-  if (keys['KeyD']||keys['ArrowRight']) { mx-=cz2; mz+=cx2; }
+  // Collision: check feet (-1.9), mid (-1), head (-0.1)
+  const nx=P.x+vx;
+  if(!solid(nx,P.y-.1,P.z)&&!solid(nx,P.y-1,P.z)&&!solid(nx,P.y-1.9,P.z))P.x=nx;
+  const nz=P.z+vz;
+  if(!solid(P.x,P.y-.1,nz)&&!solid(P.x,P.y-1,nz)&&!solid(P.x,P.y-1.9,nz))P.z=nz;
 
-  const mlen = Math.sqrt(mx*mx+mz*mz)||1;
-  const vx = mx/mlen*SPEED, vz = mz/mlen*SPEED;
+  // Gravity + jump
+  P.vy+=GRAV;
+  if(keys['Space']&&P.onGround){P.vy=JUMP;P.onGround=false;}
 
-  // X move with head+body collision
-  const nx = P.x + vx;
-  if (!solidAt(nx, P.y-.1, P.z) && !solidAt(nx, P.y-1, P.z) && !solidAt(nx, P.y-1.9, P.z)) P.x = nx;
-  // Z move with head+body collision
-  const nz = P.z + vz;
-  if (!solidAt(P.x, P.y-.1, nz) && !solidAt(P.x, P.y-1, nz) && !solidAt(P.x, P.y-1.9, nz)) P.z = nz;
-
-  // Gravity
-  P.vy += GRAV;
-  if (keys['Space'] && P.onGround) { P.vy = JUMP; P.onGround = false; }
-
-  const ny = P.y + P.vy;
-  if (solidAt(P.x, ny-1.95, P.z)) {
-    // Feet blocked
-    if (P.vy > 0) { P.onGround = true; }
-    P.vy = 0;
+  const ny=P.y+P.vy;
+  if(P.vy>0&&solid(P.x,ny-1.95,P.z)){
+    P.onGround=true;P.vy=0;
+  } else if(P.vy<0&&solid(P.x,ny-.05,P.z)){
+    P.vy=0;
   } else {
-    P.y = ny;
-    P.onGround = false;
+    P.y=ny;P.onGround=false;
   }
-  if (solidAt(P.x, P.y-.05, P.z)) { P.vy = 0; } // head hit
 
-  // Clamp to world
-  P.x = Math.max(.5, Math.min(WX-.5, P.x));
-  P.y = Math.max(2,  Math.min(WY-1,  P.y));
-  P.z = Math.max(.5, Math.min(WZ-.5, P.z));
+  P.x=Math.max(.5,Math.min(WX-.5,P.x));
+  P.y=Math.max(2,Math.min(WY-1,P.y));
+  P.z=Math.max(.5,Math.min(WZ-.5,P.z));
 
-  // Block interaction (mine/place)
-  mineTimer++;
-  if (mineTimer > 7) {
-    const dirX=Math.cos(P.yaw), dirZ=Math.sin(P.yaw);
-    const rdy2 = -Math.tan(P.pitch);
-    const rl = Math.sqrt(dirX*dirX+rdy2*rdy2+dirZ*dirZ);
-    const eyeY = P.y - 0.3;
-    const hit = castRay(P.x, eyeY, P.z, dirX/rl, rdy2/rl, dirZ/rl, 7);
-    if (hit) {
-      document.getElementById('blk').textContent = BNAMES[hit.block]||'?';
-      if (mleft)  { setB(hit.wx,hit.wy,hit.wz, B.AIR); sealEvent(`BREAK|${BNAMES[hit.block]}`); mineTimer=0; }
-      if (mright && getB(hit.px,hit.py,hit.pz)===B.AIR) {
-        setB(hit.px,hit.py,hit.pz, P.sel); sealEvent(`PLACE|${BNAMES[P.sel]}`); mineTimer=0;
+  // Aiming / block interaction
+  actionTimer++;
+  if(actionTimer>7){
+    const ax=cx,az=cz,ay=-Math.tan(P.pitch);
+    const al=Math.sqrt(ax*ax+ay*ay+az*az);
+    const eyeY=P.y-0.3;
+    const aim=ray3D(P.x,eyeY,P.z,ax/al,ay/al,az/al,7);
+    if(aim){
+      document.getElementById('blk').textContent=BN[aim.block];
+      if(mleft){sb(aim.wx,aim.wy,aim.wz,B.AIR);seal('BREAK|'+BN[aim.block]);actionTimer=0;}
+      if(mright&&gb(aim.px,aim.py,aim.pz)===B.AIR){
+        sb(aim.px,aim.py,aim.pz,P.sel);seal('PLACE|'+BN[P.sel]);actionTimer=0;
       }
     } else {
-      document.getElementById('blk').textContent = 'AIR';
+      document.getElementById('blk').textContent='–';
     }
   }
 
-  // HUD
-  const depth = Math.max(0, 20 - ~~P.y);
-  document.getElementById('pos').textContent   = `${~~P.x},${~~P.y},${~~P.z}`;
-  document.getElementById('depth').textContent = `${depth}m`;
+  document.getElementById('pos').textContent=`${~~P.x},${~~P.y},${~~P.z}`;
 }
 
-// ── WORM ──────────────────────────────────────────────────────
-let wormPrev = 'GENESIS';
-async function sealEvent(evt) {
-  const msg = `${wormPrev}|${evt}|${Date.now()}`;
-  if (window.crypto?.subtle) {
-    const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
-    wormPrev = Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
-  } else {
-    wormPrev = evt + '_' + Date.now().toString(16);
+// ── WORM ────────────────────────────────────────────────────
+let wormHead='GENESIS';
+async function seal(evt){
+  const msg=wormHead+'|'+evt+'|'+Date.now();
+  if(window.crypto?.subtle){
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
+    wormHead=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
   }
-  document.getElementById('wseal').textContent = wormPrev.slice(0,14)+'...';
-  document.getElementById('worm').textContent  = 'WORM CHAIN: ' + wormPrev;
+  document.getElementById('wseal').textContent=wormHead.slice(0,14)+'...';
+  document.getElementById('worm').textContent='WORM: '+wormHead;
 }
-sealEvent('WORLD_GEN');
+seal('WORLD_GEN');
 
-// ── Game Loop ─────────────────────────────────────────────────
-let last=0, frames=0;
-function loop(ts) {
+// ── Loop ────────────────────────────────────────────────────
+let last=0,frames=0;
+function loop(ts){
   frames++;
-  if (ts - last > 1000) {
-    document.getElementById('fps').textContent = frames;
-    frames = 0; last = ts;
-  }
+  if(ts-last>1000){document.getElementById('fps').textContent=frames;frames=0;last=ts;}
   update();
   render();
   requestAnimationFrame(loop);
