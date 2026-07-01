@@ -110,7 +110,7 @@
  ██████╔╝╚██████╔╝██████╔╝███████║    ╚██████╔╝██║  ██║██║ ╚═╝ ██║███████╗███████║
  ╚═════╝  ╚═════╝ ╚═════╝ ╚══════╝     ╚═════╝ ╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝
 </pre>
-  <div id="tagline">Sovereign Assembly Builds · x86-64 NASM · MIT License · WORM Sealed</div>
+  <div id="tagline">Sovereign Game Builds · Python/tkinter · Browser Canvas · DOS COM · WORM Sealed</div>
   <div id="worm-line">WORM: initializing chain...</div>
 </div>
 
@@ -118,6 +118,7 @@
 <nav id="nav">
   <a href="#games">Games</a>
   <a href="#build">Build</a>
+  <a href="chess/bob_chess.html">Chess</a>
   <a href="https://github.com/SNAPKITTYWEST/bobs-games">GitHub</a>
   <a href="https://github.com/SNAPKITTYWEST">SnapKitty</a>
   <a href="https://collectivekitty.com">collectivekitty.com</a>
@@ -134,7 +135,7 @@
   <div class="game-card">
     <span class="badge badge-live">LIVE</span>
     <h2>BOB SNAKE</h2>
-    <div class="lang">x86-64 NASM · Python/curses</div>
+    <div class="lang">Python/tkinter · MIT · WORM</div>
     <pre class="ascii-preview">
 +--------------------------------------+
 |  O###                    *           |
@@ -144,9 +145,9 @@
 +--------------------------------------+
 SCORE: 0030  WORM: 3a7f2c9e...
     </pre>
-    <p>Snake written in raw x86-64 assembly. No libc. No runtime. Syscalls directly. Terminal raw mode via ioctl. LCG RNG in registers. WORM sealed game over screen.</p>
+    <p>Canonical Windows-ready Snake is now a pure Python/tkinter game with gold snake, red food, increasing speed, high score tracking, and a WORM sealed game over screen. The assembly file remains as a legacy artifact.</p>
     <div class="links">
-      <a href="snake/bob_snake.asm" class="link-gold">Download ASM</a>
+      <a href="snake/bob_snake.asm" class="link-grey">ASM Archive</a>
       <a href="snake/bob_snake.py"  class="link-gold">Download PY</a>
       <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/snake" class="link-grey">View Source</a>
     </div>
@@ -155,7 +156,7 @@ SCORE: 0030  WORM: 3a7f2c9e...
   <div class="game-card">
     <span class="badge badge-live">LIVE</span>
     <h2>BOB SIMS</h2>
-    <div class="lang">Python/curses · WORM State</div>
+    <div class="lang">Python/tkinter · WORM State</div>
     <pre class="ascii-preview">
  @  ARIA [ENGINEER]  →  KITCHEN
  $  CARTO [HACKER]   →  ARCADE
@@ -164,7 +165,7 @@ SCORE: 0030  WORM: 3a7f2c9e...
  MOOD: THRIVING ████████░░ 84
  WORM: 3a7f2c9e4b1d...
     </pre>
-    <p>Sovereign NPC life simulation. 12 agents, 6 needs, 6 rooms. NPCs pathfind to restore their lowest need. Every state change WORM sealed. Terminal curses UI.</p>
+    <p>Sovereign NPC life simulation. 12 agents, 6 needs, 6 rooms. NPCs pathfind to restore their lowest need. Every state change is WORM sealed. Runs as a Windows-friendly tkinter app.</p>
     <div class="links">
       <a href="sims/bob_sims.py" class="link-gold">Download PY</a>
       <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/sims" class="link-grey">View Source</a>
@@ -230,6 +231,29 @@ FPS: 60  BLOCK: STONE  WORM: c4...
 
   <div class="game-card">
     <span class="badge badge-live">LIVE</span>
+    <h2>BOB CHESS</h2>
+    <div class="lang">Browser · Legal Moves · Mesh AI · WORM</div>
+    <pre class="ascii-preview">
+8 r n b q k b n r
+7 p p p p p p p p
+6 . . . . . . . .
+5 . . . . . . . .
+4 . . . ♙ . . . .
+3 . . . . . . . .
+2 ♙ ♙ ♙ . ♙ ♙ ♙ ♙
+1 ♖ ♘ ♗ ♕ ♔ ♗ ♘ ♖
+  a b c d e f g h
+MESH: calculating... WORM: 83c3...
+    </pre>
+    <p>Play chess as white against THE MESH. Legal move gate prevents invalid action, the Mesh searches replies with a depth-limited evaluator, and every ply is SHA-256 WORM sealed into the match ledger.</p>
+    <div class="links">
+      <a href="chess/bob_chess.html" class="link-gold">Play Now</a>
+      <a href="https://github.com/SNAPKITTYWEST/bobs-games/tree/main/chess" class="link-grey">View Source</a>
+    </div>
+  </div>
+
+  <div class="game-card">
+    <span class="badge badge-live">LIVE</span>
     <h2>BOB WORLD</h2>
     <div class="lang">Sovereign Metaverse · All Worlds</div>
     <pre class="ascii-preview">
@@ -240,9 +264,10 @@ FPS: 60  BLOCK: STONE  WORM: c4...
  ⬡ SNAKE     │ ⬡ STATUS
 ONE WORM CHAIN · EVIDENCE OR SILENCE
     </pre>
-    <p>All worlds in one sovereign dashboard. Six game panes live simultaneously. One shared WORM chain across every world. The BOB sovereign metaverse — all MIT licensed.</p>
+    <p>All worlds in one sovereign dashboard, plus KITTYVERSE: an Enzoi-powered tkinter hub where a sealed avatar walks through portals into Snake, SIMS, and future minigames. One shared WORM chain across every world.</p>
     <div class="links">
       <a href="world/bob_world.html" class="link-gold">Enter World</a>
+      <a href="kittyverse.py" class="link-gold">KITTYVERSE PY</a>
       <a href="https://github.com/SNAPKITTYWEST/bobs-games" class="link-grey">GitHub</a>
     </div>
   </div>
@@ -267,9 +292,9 @@ WORM: pending...
   </div>
 
   <div class="game-card">
-    <span class="badge badge-soon">COMING</span>
-    <h2>BOB DOOM RENDERER</h2>
-    <div class="lang">x86-64 NASM · RISC-V</div>
+    <span class="badge badge-live">LIVE</span>
+    <h2>BOB VORTEX ENGINE</h2>
+    <div class="lang">x86 NASM COM · Browser Raycaster</div>
     <pre class="ascii-preview">
 ████████████████████████████
 ████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████████
@@ -278,9 +303,9 @@ WORM: pending...
 ████▓░░░░░░░░░░░░░▓██████████
 ROUTE: RAYCASTER_CHUNK
     </pre>
-    <p>Raycasting engine in assembly. Fixed-point math. No floating point. Column-by-column wall rendering. BOB routes all geometry through the sovereign math chunk.</p>
+    <p>The DOOM-style engine now lives in the dedicated bob-engine repo: a compact VGA Mode 13h DOS COM demo plus the playable Vortex Civilization browser raycaster. This card points to the canonical engine owner.</p>
     <div class="links">
-      <a href="#" class="link-grey">Watch Repo</a>
+      <a href="https://github.com/SNAPKITTYWEST/bob-engine" class="link-gold">Open Engine</a>
     </div>
   </div>
 
@@ -324,11 +349,13 @@ setInterval(updateWorm, 8000);
 const steps = [
   { cmd: 'git clone https://github.com/SNAPKITTYWEST/bobs-games', delay: 60,
     out: ['Cloning into \'bobs-games\'...', 'remote: Enumerating objects: 24', 'Receiving objects: 100% (24/24) done.'] },
-  { cmd: 'cd bobs-games/snake', delay: 60, out: [] },
-  { cmd: 'nasm -f elf64 bob_snake.asm -o bob_snake.o && ld bob_snake.o -o bob_snake', delay: 40,
-    out: ['[BOB] Assembling...', '[BOB] Linking...', '[BOB] WORM SEALED ✓'] },
-  { cmd: './bob_snake', delay: 60,
-    out: ['  B O B   S O V E R E I G N   S N A K E', 'WASD / ARROWS | Q: quit | EVIDENCE OR SILENCE', '', 'SCORE: 0000  WORM: 3a7f2c9e4b1d...'] },
+  { cmd: 'cd bobs-games', delay: 60, out: [] },
+  { cmd: 'python kittyverse.py', delay: 45,
+    out: ['[ENZOI] Loading sealed avatar runtime...', '[KITTYVERSE] Hub online: SIMS + SNAKE portals', '[BOB] WORM identity carried across worlds'] },
+  { cmd: 'python snake/bob_snake.py', delay: 60,
+    out: ['  B O B   S O V E R E I G N   S N A K E', 'ARROWS / WASD | Q: quit | EVIDENCE OR SILENCE', '', 'SCORE: 0000  WORM: 3a7f2c9e4b1d...'] },
+  { cmd: 'open chess/bob_chess.html', delay: 60,
+    out: ['[MESH] Chess engine online...', '[BOB] Legal move gate active', '[WORM] Every ply sealed'] },
 ];
 
 let si = 0, ci = 0, typing = true, outI = 0, waiting = false;
@@ -461,7 +488,7 @@ function drawGame() {
   ctx.fillText(`SCORE: ${String(score).padStart(4,'0')}`, OX+4, OY+ROWS*CELL+18);
   ctx.fillStyle = '#b8860b';
   ctx.font = '10px Courier New';
-  ctx.fillText('BOB SOVEREIGN SNAKE · x86-64 NASM · EVIDENCE OR SILENCE', OX+4, OY-8);
+  ctx.fillText('BOB SOVEREIGN SNAKE · PYTHON/TKINTER CANONICAL · EVIDENCE OR SILENCE', OX+4, OY-8);
 }
 
 let lastStep = 0;

@@ -1,158 +1,260 @@
-"""
-BOB SOVEREIGN SNAKE — Python/curses
+"""BOB SOVEREIGN SNAKE - tkinter edition.
+SPDX-License-Identifier: MIT
+Copyright (c) 2026 SnapKitty Collective
+
 Run: python bob_snake.py
+Controls: WASD / arrows to move, Space to restart, Q/Esc to quit.
 """
-import curses, random, hashlib, time
+from __future__ import annotations
 
-def main(stdscr):
-    curses.curs_set(0)
-    stdscr.nodelay(True)
-    curses.start_color()
-    curses.init_pair(1, curses.COLOR_YELLOW, curses.COLOR_BLACK)  # gold
-    curses.init_pair(2, curses.COLOR_RED,    curses.COLOR_BLACK)  # food
-    curses.init_pair(3, curses.COLOR_CYAN,   curses.COLOR_BLACK)  # border
-    curses.init_pair(4, curses.COLOR_WHITE,  curses.COLOR_BLACK)  # text
+import hashlib
+import random
+import time
+import tkinter as tk
+from pathlib import Path
 
-    GOLD  = curses.color_pair(1) | curses.A_BOLD
-    RED   = curses.color_pair(2) | curses.A_BOLD
-    CYAN  = curses.color_pair(3)
-    WHITE = curses.color_pair(4)
+GRID_W = 40
+GRID_H = 24
+START_DELAY_MS = 135
+MIN_DELAY_MS = 55
+SPEED_STEP_MS = 4
 
-    H, W = stdscr.getmaxyx()
-    GH, GW = 20, 40
-    OY, OX = 3, (W - GW) // 2   # grid origin
+BG = "#050507"
+PANEL = "#0d0d12"
+GOLD = "#ffd700"
+GOLD_DARK = "#9b6b00"
+RED = "#ff3333"
+CYAN = "#00d4ff"
+GREEN = "#00ff88"
+MAGENTA = "#d36bff"
+WHITE = "#e8e8e8"
 
-    def draw_chrome():
-        stdscr.clear()
-        title = "  B O B   S O V E R E I G N   S N A K E  "
-        stdscr.addstr(1, (W - len(title)) // 2, title, GOLD)
-        ctrl = "WASD / ARROWS  |  Q: quit"
-        stdscr.addstr(2, (W - len(ctrl)) // 2, ctrl, WHITE)
+DIRS: dict[str, tuple[int, int]] = {
+    "Up": (0, -1),
+    "Down": (0, 1),
+    "Left": (-1, 0),
+    "Right": (1, 0),
+    "w": (0, -1),
+    "W": (0, -1),
+    "s": (0, 1),
+    "S": (0, 1),
+    "a": (-1, 0),
+    "A": (-1, 0),
+    "d": (1, 0),
+    "D": (1, 0),
+}
 
-        # border
-        for x in range(GW + 2):
-            stdscr.addch(OY,      OX + x - 1, '-', CYAN)
-            stdscr.addch(OY + GH + 1, OX + x - 1, '-', CYAN)
-        for y in range(GH + 2):
-            stdscr.addch(OY + y, OX - 1,      '|', CYAN)
-            stdscr.addch(OY + y, OX + GW,     '|', CYAN)
-        stdscr.addch(OY,          OX - 1,      '+', CYAN)
-        stdscr.addch(OY,          OX + GW,     '+', CYAN)
-        stdscr.addch(OY + GH + 1, OX - 1,      '+', CYAN)
-        stdscr.addch(OY + GH + 1, OX + GW,     '+', CYAN)
 
-    def draw_cell(y, x, ch, attr):
+class BobSnake:
+    def __init__(self, root: tk.Tk) -> None:
+        self.root = root
+        self.root.title("BOB SOVEREIGN SNAKE")
+        self.root.configure(bg=BG)
+        self.root.minsize(760, 560)
+
+        self.high_score_path = Path(__file__).with_name("snake_high_score.txt")
+        self.high_score = self._load_high_score()
+
+        self.canvas = tk.Canvas(root, bg=BG, highlightthickness=0)
+        self.canvas.pack(fill=tk.BOTH, expand=True)
+
+        self.direction = (1, 0)
+        self.pending_direction = self.direction
+        self.snake: list[tuple[int, int]] = []
+        self.food = (0, 0)
+        self.score = 0
+        self.delay_ms = START_DELAY_MS
+        self.game_over = False
+        self.paused = False
+        self.last_tick = time.time()
+
+        self.cell = 18
+        self.origin_x = 0
+        self.origin_y = 0
+        self.board_w = 0
+        self.board_h = 0
+
+        for key in list(DIRS):
+            root.bind(f"<{key}>", self.on_key)
+        root.bind("<space>", self.restart)
+        root.bind("<Escape>", lambda _event: root.destroy())
+        root.bind("q", lambda _event: root.destroy())
+        root.bind("Q", lambda _event: root.destroy())
+        root.bind("p", self.toggle_pause)
+        root.bind("P", self.toggle_pause)
+        root.bind("<Configure>", lambda _event: self.draw())
+
+        self.reset()
+        self.loop()
+
+    def _load_high_score(self) -> int:
         try:
-            stdscr.addch(OY + y + 1, OX + x, ch, attr)
-        except curses.error:
+            return max(0, int(self.high_score_path.read_text(encoding="utf-8").strip()))
+        except (OSError, ValueError):
+            return 0
+
+    def _save_high_score(self) -> None:
+        try:
+            self.high_score_path.write_text(str(self.high_score), encoding="utf-8")
+        except OSError:
             pass
 
-    def erase_cell(y, x):
-        draw_cell(y, x, ' ', WHITE)
+    def reset(self) -> None:
+        mid_x = GRID_W // 2
+        mid_y = GRID_H // 2
+        self.snake = [(mid_x, mid_y), (mid_x - 1, mid_y), (mid_x - 2, mid_y)]
+        self.direction = (1, 0)
+        self.pending_direction = self.direction
+        self.score = 0
+        self.delay_ms = START_DELAY_MS
+        self.game_over = False
+        self.paused = False
+        self.food = self.spawn_food()
+        self.draw()
 
-    def draw_score(score):
-        s = f"SCORE: {score}"
-        stdscr.addstr(OY + GH + 2, OX, s + "          ", GOLD)
+    def restart(self, _event: tk.Event | None = None) -> None:
+        if self.game_over:
+            self.reset()
 
-    def spawn_food(snake):
-        sset = set(snake)
-        while True:
-            fx = random.randint(1, GW - 2)
-            fy = random.randint(1, GH - 2)
-            if (fy, fx) not in sset:
-                return fy, fx
+    def toggle_pause(self, _event: tk.Event | None = None) -> None:
+        if not self.game_over:
+            self.paused = not self.paused
+            self.draw()
 
-    # init snake
-    sy, sx = GH // 2, GW // 2
-    snake = [(sy, sx), (sy, sx-1), (sy, sx-2)]
-    direction = (0, 1)   # going right
-    score = 0
-    fy, fx = spawn_food(snake)
+    def on_key(self, event: tk.Event) -> None:
+        if self.game_over:
+            return
+        next_dir = DIRS.get(event.keysym) or DIRS.get(event.char)
+        if not next_dir:
+            return
+        if (next_dir[0] + self.direction[0], next_dir[1] + self.direction[1]) != (0, 0):
+            self.pending_direction = next_dir
 
-    draw_chrome()
-    # draw initial snake
-    for i, (y, x) in enumerate(snake):
-        draw_cell(y, x, 'O' if i == 0 else '#', GOLD)
-    draw_cell(fy, fx, '*', RED)
-    draw_score(score)
-    stdscr.refresh()
+    def spawn_food(self) -> tuple[int, int]:
+        occupied = set(self.snake)
+        free = [(x, y) for y in range(1, GRID_H - 1) for x in range(1, GRID_W - 1) if (x, y) not in occupied]
+        if not free:
+            return (-1, -1)
+        return random.choice(free)
 
-    DIR_MAP = {
-        ord('w'): (-1, 0), ord('W'): (-1, 0),
-        ord('s'): ( 1, 0), ord('S'): ( 1, 0),
-        ord('a'): ( 0,-1), ord('A'): ( 0,-1),
-        ord('d'): ( 0, 1), ord('D'): ( 0, 1),
-        curses.KEY_UP:    (-1, 0),
-        curses.KEY_DOWN:  ( 1, 0),
-        curses.KEY_LEFT:  ( 0,-1),
-        curses.KEY_RIGHT: ( 0, 1),
-    }
+    def step(self) -> None:
+        if self.game_over or self.paused:
+            return
 
-    tick = 0.13
-
-    while True:
-        time.sleep(tick)
-        key = stdscr.getch()
-
-        if key in (ord('q'), ord('Q')):
-            break
-
-        if key in DIR_MAP:
-            nd = DIR_MAP[key]
-            # prevent reversing
-            if (nd[0] + direction[0], nd[1] + direction[1]) != (0, 0):
-                direction = nd
-
-        # new head
-        hy, hx = snake[0][0] + direction[0], snake[0][1] + direction[1]
-
-        # wall collision
-        if not (0 < hx < GW - 1 and 0 < hy < GH - 1):
-            break
-
-        # self collision
-        if (hy, hx) in set(snake):
-            break
-
-        # eat food?
-        ate = (hy == fy and hx == fx)
-
-        if not ate:
-            tail = snake.pop()
-            erase_cell(tail[0], tail[1])
-
-        snake.insert(0, (hy, hx))
+        self.direction = self.pending_direction
+        head_x, head_y = self.snake[0]
+        dx, dy = self.direction
+        new_head = (head_x + dx, head_y + dy)
+        ate = new_head == self.food
 
         if ate:
-            score += 10
-            fy, fx = spawn_food(snake)
-            draw_cell(fy, fx, '*', RED)
-            draw_score(score)
-            if tick > 0.06:
-                tick -= 0.005   # speed up
+            collision_body = set(self.snake)
+        else:
+            collision_body = set(self.snake[:-1])
 
-        # draw prev head as body
-        if len(snake) > 1:
-            draw_cell(snake[1][0], snake[1][1], '#', GOLD)
+        wall_hit = not (0 < new_head[0] < GRID_W - 1 and 0 < new_head[1] < GRID_H - 1)
+        self_hit = new_head in collision_body
+        if wall_hit or self_hit:
+            self.end_game()
+            return
 
-        # draw new head
-        draw_cell(hy, hx, 'O', GOLD)
-        stdscr.refresh()
+        self.snake.insert(0, new_head)
+        if ate:
+            self.score += 10
+            self.delay_ms = max(MIN_DELAY_MS, self.delay_ms - SPEED_STEP_MS)
+            self.food = self.spawn_food()
+            if self.food == (-1, -1):
+                self.end_game()
+                return
+        else:
+            self.snake.pop()
 
-    # game over
-    seal = hashlib.sha256(f"BOB-SNAKE-{score}".encode()).hexdigest()
-    go1 = "+-------------------------+"
-    go2 = f"|   SCORE: {score:<5}  SEALED   |"
-    go3 = "|    W O R M  S E A L E D |"
-    go4 = "+-------------------------+"
-    cy = OY + GH // 2
-    cx = OX + GW // 2 - 14
-    stdscr.addstr(cy,   cx, go1, GOLD)
-    stdscr.addstr(cy+1, cx, go2, GOLD)
-    stdscr.addstr(cy+2, cx, go3, GOLD)
-    stdscr.addstr(cy+3, cx, go4, GOLD)
-    stdscr.addstr(cy+5, cx, seal[:40], WHITE)
-    stdscr.refresh()
-    time.sleep(3)
+    def end_game(self) -> None:
+        self.game_over = True
+        if self.score > self.high_score:
+            self.high_score = self.score
+            self._save_high_score()
+        self.draw()
 
-curses.wrapper(main)
+    def update_geometry(self) -> None:
+        width = max(1, self.canvas.winfo_width())
+        height = max(1, self.canvas.winfo_height())
+        usable_w = max(200, width - 48)
+        usable_h = max(160, height - 132)
+        self.cell = max(8, min(usable_w // GRID_W, usable_h // GRID_H))
+        self.board_w = self.cell * GRID_W
+        self.board_h = self.cell * GRID_H
+        self.origin_x = (width - self.board_w) // 2
+        self.origin_y = 82
+
+    def draw(self) -> None:
+        self.update_geometry()
+        c = self.canvas
+        c.delete("all")
+
+        width = c.winfo_width()
+        c.create_rectangle(0, 0, width, 70, fill=PANEL, outline="#20202a")
+        c.create_text(width // 2, 22, text="B O B   S O V E R E I G N   S N A K E", fill=GOLD, font=("Courier New", 18, "bold"))
+        status = "PAUSED" if self.paused else ("WORM SEALED" if self.game_over else "LIVE")
+        c.create_text(width // 2, 50, text=f"SCORE {self.score:04d}  |  HIGH {self.high_score:04d}  |  SPEED {1000 // self.delay_ms:02d} TPS  |  {status}", fill=WHITE, font=("Courier New", 10))
+
+        x0 = self.origin_x
+        y0 = self.origin_y
+        x1 = x0 + self.board_w
+        y1 = y0 + self.board_h
+        c.create_rectangle(x0 - 2, y0 - 2, x1 + 2, y1 + 2, outline=CYAN, width=2)
+        c.create_rectangle(x0, y0, x1, y1, fill="#09090d", outline="")
+
+        for x in range(GRID_W):
+            for y in range(GRID_H):
+                if x in (0, GRID_W - 1) or y in (0, GRID_H - 1):
+                    self.draw_cell(x, y, "#121824", CYAN)
+
+        fx, fy = self.food
+        if fx >= 0:
+            self.draw_cell(fx, fy, RED, "#ff7777", oval=True)
+
+        for i, (x, y) in enumerate(reversed(self.snake)):
+            is_head = i == len(self.snake) - 1
+            fill = GOLD if is_head else "#dca900"
+            outline = "#fff2a0" if is_head else GOLD_DARK
+            self.draw_cell(x, y, fill, outline, oval=is_head)
+
+        if self.game_over:
+            self.draw_game_over()
+
+        c.create_text(x0, y1 + 20, text="WASD / ARROWS move   P pause   SPACE restart after seal   Q quit", fill="#8e8e9a", font=("Courier New", 9), anchor="w")
+
+    def draw_cell(self, x: int, y: int, fill: str, outline: str, oval: bool = False) -> None:
+        pad = max(1, self.cell // 9)
+        x0 = self.origin_x + x * self.cell + pad
+        y0 = self.origin_y + y * self.cell + pad
+        x1 = self.origin_x + (x + 1) * self.cell - pad
+        y1 = self.origin_y + (y + 1) * self.cell - pad
+        if oval:
+            self.canvas.create_oval(x0, y0, x1, y1, fill=fill, outline=outline, width=2)
+        else:
+            self.canvas.create_rectangle(x0, y0, x1, y1, fill=fill, outline=outline)
+
+    def draw_game_over(self) -> None:
+        seal = hashlib.sha256(f"BOB-SNAKE:{self.score}:{self.high_score}".encode("utf-8")).hexdigest()
+        cx = self.origin_x + self.board_w // 2
+        cy = self.origin_y + self.board_h // 2
+        w = min(520, self.board_w - 40)
+        h = 170
+        self.canvas.create_rectangle(cx - w // 2, cy - h // 2, cx + w // 2, cy + h // 2, fill="#070707", outline=GOLD, width=3)
+        self.canvas.create_text(cx, cy - 48, text="W O R M   S E A L E D", fill=GOLD, font=("Courier New", 20, "bold"))
+        self.canvas.create_text(cx, cy - 14, text=f"SCORE: {self.score}    HIGH: {self.high_score}", fill=WHITE, font=("Courier New", 12, "bold"))
+        self.canvas.create_text(cx, cy + 18, text=f"SHA-256: {seal[:40]}", fill=MAGENTA, font=("Courier New", 10))
+        self.canvas.create_text(cx, cy + 52, text="SPACE to restart   Q to quit", fill=GREEN, font=("Courier New", 10, "bold"))
+
+    def loop(self) -> None:
+        self.step()
+        self.draw()
+        self.root.after(self.delay_ms if not self.paused else 100, self.loop)
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    BobSnake(root)
+    root.mainloop()

@@ -24,13 +24,13 @@ canvas { display:block; }
   <span class="stat">WORM: <span class="val" id="wseal" style="color:#b8860b">...</span></span>
 </div>
 <canvas id="c"></canvas>
-<div id="worm" id="wline">WORM CHAIN: initializing...</div>
+<div id="worm">WORM CHAIN: initializing...</div>
 
 <script>
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
 canvas.width  = window.innerWidth;
-canvas.height = window.innerHeight - 32;
+canvas.height = Math.max(240, window.innerHeight - 32);
 
 // ── World gen ────────────────────────────────────────────────
 const CZ  = 16;   // chunk size
@@ -168,10 +168,24 @@ canvas.addEventListener('contextmenu', e=>e.preventDefault());
 
 // ── WORM seal ────────────────────────────────────────────────
 let wormPrev = 'GENESIS';
+function fallbackDigestHex(input) {
+  let h1 = 0x811c9dc5, h2 = 0x01000193;
+  for (let i=0;i<input.length;i++) {
+    h1 ^= input.charCodeAt(i);
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 ^= h1 + i;
+    h2 = Math.imul(h2, 0x85ebca6b) >>> 0;
+  }
+  return Array.from({length:8},(_,i)=>((i%2?h2:h1) ^ Math.imul(i+1,0x9e3779b1)).toString(16).padStart(8,'0')).join('');
+}
 async function sealEvent(evt) {
   const msg = `${wormPrev}|${evt}`;
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
-  wormPrev = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  if (window.crypto && crypto.subtle) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(msg));
+    wormPrev = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  } else {
+    wormPrev = fallbackDigestHex(msg);
+  }
   document.getElementById('wseal').textContent = wormPrev.slice(0,16)+'...';
   document.getElementById('worm').textContent  = 'WORM CHAIN: '+wormPrev;
 }
@@ -322,7 +336,7 @@ loop();
 
 window.addEventListener('resize', ()=>{
   canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight-32;
+  canvas.height=Math.max(240, window.innerHeight-32);
 });
 </script>
 </body>

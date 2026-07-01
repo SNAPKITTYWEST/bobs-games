@@ -43,8 +43,17 @@ canvas { display:block; cursor:crosshair; }
 <script>
 const canvas = document.getElementById('c');
 const ctx    = canvas.getContext('2d');
-canvas.width  = window.innerWidth;
-canvas.height = window.innerHeight;
+let W = 0, H = 0, half = 0, imgData, buf;
+function resizeCanvas() {
+  canvas.width  = Math.max(320, window.innerWidth);
+  canvas.height = Math.max(240, window.innerHeight);
+  W = canvas.width;
+  H = canvas.height;
+  half = Math.floor(H/2);
+  imgData = ctx.createImageData(W,H);
+  buf = imgData.data;
+}
+resizeCanvas();
 
 // ── Raycaster Voxel Engine ────────────────────────────────────
 const BLOCK = { AIR:0, GRASS:1, DIRT:2, STONE:3, WOOD:4, GOLD:5, WATER:6, LAVA:7, GLASS:8, BEDROCK:9 };
@@ -160,11 +169,6 @@ function raycast(ox,oy,oz,dx,dy,dz,maxDist) {
 }
 
 // ── Renderer (column raycaster + floor/ceiling) ───────────────
-const W=canvas.width, H=canvas.height;
-const half=Math.floor(H/2);
-const imgData=ctx.createImageData(W,H);
-const buf=imgData.data;
-
 function setPixel(x,y,r,g,b) {
   const i=(y*W+x)*4;
   buf[i]=r;buf[i+1]=g;buf[i+2]=b;buf[i+3]=255;
@@ -302,10 +306,24 @@ document.querySelectorAll('.slot').forEach((s,i)=>{
 
 // WORM
 let wormPrev='GENESIS';
+function fallbackDigestHex(input) {
+  let h1 = 0x811c9dc5, h2 = 0x01000193;
+  for (let i=0;i<input.length;i++) {
+    h1 ^= input.charCodeAt(i);
+    h1 = Math.imul(h1, 0x01000193) >>> 0;
+    h2 ^= h1 + i;
+    h2 = Math.imul(h2, 0x85ebca6b) >>> 0;
+  }
+  return Array.from({length:8},(_,i)=>((i%2?h2:h1) ^ Math.imul(i+1,0x9e3779b1)).toString(16).padStart(8,'0')).join('');
+}
 async function sealEvent(evt) {
   const msg=`${wormPrev}|${evt}`;
-  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
-  wormPrev=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  if (window.crypto && crypto.subtle) {
+    const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(msg));
+    wormPrev=Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
+  } else {
+    wormPrev=fallbackDigestHex(msg);
+  }
   document.getElementById('wseal').textContent=wormPrev.slice(0,12)+'...';
   document.getElementById('worm').textContent='WORM CHAIN: '+wormPrev;
 }
@@ -321,8 +339,7 @@ function loop(ts) {
 }
 requestAnimationFrame(loop);
 window.addEventListener('resize',()=>{
-  canvas.width=window.innerWidth;
-  canvas.height=window.innerHeight;
+  resizeCanvas();
 });
 </script>
 </body>
